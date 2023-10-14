@@ -36,9 +36,9 @@ add_executable(RedNoise
         libs/sdw/TextureMap.cpp
         libs/sdw/TexturePoint.cpp
         libs/sdw/Utils.cpp
-        src/Gradient.cpp
         src/util/lerp.cpp
- "src/Gradient.cpp")
+        src/util/lines.cpp
+        src/Triangles.cpp)
 
 if (MSVC)
     target_compile_options(RedNoise

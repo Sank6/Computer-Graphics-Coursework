@@ -4,8 +4,8 @@
 std::vector<float> interpolateSingleFloats(float from, float to, float numberOfValues) {
   std::vector<float> values = {};
   values.reserve((long) numberOfValues);
-    float step = (to - from) / (numberOfValues - 1);
-  for (float i = 0; i < numberOfValues; i++) values.push_back(from + (step * i));
+  float step = (to - from) / (numberOfValues - 1);
+  for (float i = 0; i < numberOfValues; i++) values.push_back(round(from + (step * i)));
   return values;
 }
 
