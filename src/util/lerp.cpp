@@ -1,5 +1,4 @@
-#include <vector>
-#include <glm/glm.hpp>
+#include "lerp.h"
 
 std::vector<float> interpolateSingleFloats(float from, float to, float numberOfValues) {
   std::vector<float> values = {};

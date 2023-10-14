@@ -1,9 +1,4 @@
-#include <CanvasPoint.h>
-#include <Colour.h>
-#include <DrawingWindow.h>
-#include <CanvasTriangle.h>
-#include <TextureMap.h>
-
+#include "lines.h"
 #include "lerp.h"
 
 #include <tuple>

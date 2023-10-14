@@ -26,7 +26,8 @@ include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(libs/sdw)
 
-add_executable(RedNoise
+add_executable(
+    RedNoise
         libs/sdw/CanvasPoint.cpp
         libs/sdw/CanvasTriangle.cpp
         libs/sdw/Colour.cpp
@@ -38,7 +39,10 @@ add_executable(RedNoise
         libs/sdw/Utils.cpp
         src/util/lerp.cpp
         src/util/lines.cpp
-        src/Triangles.cpp)
+        src/util/objParser.cpp
+        src/util/draw3d.cpp
+        src/Wireframes.cpp
+)
 
 if (MSVC)
     target_compile_options(RedNoise
