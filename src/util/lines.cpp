@@ -3,14 +3,16 @@
 
 #include <tuple>
 
-std::vector<std::tuple<float, float>> pointsOnLine(CanvasPoint from, CanvasPoint to) {
-	std::vector<std::tuple<float, float>> points = {};
-	float numberOfSteps = std::max(abs(to.x - from.x), abs(to.y - from.y)) + 1;
+std::vector<CanvasPoint> pointsOnLine(CanvasPoint from, CanvasPoint to) {
+	std::vector<CanvasPoint> points = {};
+	int numberOfSteps = std::max(abs(to.x - from.x), abs(to.y - from.y)) + 1;
 	std::vector<float> linePointsX = interpolateSingleFloats(from.x, to.x, numberOfSteps);
 	std::vector<float> linePointsY = interpolateSingleFloats(from.y, to.y, numberOfSteps);
+	std::vector<float> linePointsZ = interpolateSingleFloats(from.depth, to.depth, numberOfSteps);
+
 
 	for (int i = 0; i < numberOfSteps; i++) {
-		points.push_back(std::make_tuple(linePointsX[i], linePointsY[i]));
+		points.push_back(CanvasPoint(floor(linePointsX[i]), floor(linePointsY[i]), linePointsZ[i]));
 	}
 
 	return points;
@@ -18,10 +20,10 @@ std::vector<std::tuple<float, float>> pointsOnLine(CanvasPoint from, CanvasPoint
 
 void drawLine(DrawingWindow& window, CanvasPoint from, CanvasPoint to, Colour colour) {
 	u_int32_t colourInt = (255 << 24) + (int(colour.red) << 16) + (int(colour.green) << 8) + int(colour.blue);
-	std::vector<std::tuple<float, float>> linePoints = pointsOnLine(from, to);
+	std::vector<CanvasPoint> linePoints = pointsOnLine(from, to);
 
-	for (std::tuple<float, float> point : linePoints) {
-		window.setPixelColour(std::get<0>(point), std::get<1>(point), colourInt);
+	for (CanvasPoint point : linePoints) {
+		window.setPixelColour(point.x, point.y, colourInt, point.depth);
 	}
 }
 
@@ -81,8 +83,10 @@ void drawFilledTriangle(DrawingWindow& window, CanvasTriangle triangle, Colour c
 			double u = (dot22 * dot13 - dot12 * dot23) / denom;
 			double v = (dot11 * dot23 - dot12 * dot13) / denom;
 
+			float depth = p0.depth + u * (p1.depth - p0.depth) + v * (p2.depth - p0.depth);
+
 			if (u >= 0.0f && v >= 0.0f && u + v < 1.0f) {
-				window.setPixelColour(x, y, colourInt);
+				window.setPixelColour(x, y, colourInt, depth);
 			}
 
 			// Method 3
@@ -142,6 +146,7 @@ void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle triangle, Colour
 			double denom = (dot11 * dot22 - dot12 * dot12);
 			double u = (dot22 * dot13 - dot12 * dot23) / denom;
 			double v = (dot11 * dot23 - dot12 * dot13) / denom;
+			float depth = p0.depth + u * (p1.depth - p0.depth) + v * (p2.depth - p0.depth);
 
 			if (u >= 0.0f && v >= 0.0f && u + v < 1.0f) {
 				// Get the pixel colour from the texture
@@ -149,7 +154,7 @@ void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle triangle, Colour
 				float textureY = t0.y + u * (t1.y - t0.y) + v * (t2.y - t0.y);
 				uint32_t textureColour = texture.pixels[int(textureY) * texture.width + int(textureX)];
 
-				window.setPixelColour(x, y, textureColour);
+				window.setPixelColour(x, y, textureColour, depth);
 			}
 		}
 	}

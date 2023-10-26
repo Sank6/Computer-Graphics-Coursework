@@ -35,7 +35,6 @@ std::vector<ModelTriangle> loadObjFile(std::string fileName) {
 			int b = round(std::stof(bString) * 255);
 			
 			Colour nc = Colour(currentColourString, r, g, b);
-			std::cout << nc << std::endl;
 			colours.push_back(nc);
 		}
 

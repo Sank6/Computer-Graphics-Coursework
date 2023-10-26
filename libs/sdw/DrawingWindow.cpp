@@ -1,10 +1,11 @@
 #include <array>
 #include "DrawingWindow.h"
+#include <iomanip>
 // On some platforms you may need to include <cstring> (if you compiler can't find memset !)
 
 DrawingWindow::DrawingWindow() {}
 
-DrawingWindow::DrawingWindow(int w, int h, bool fullscreen) : width(w), height(h), pixelBuffer(w * h) {
+DrawingWindow::DrawingWindow(int w, int h, bool fullscreen) : width(w), height(h), pixelBuffer(w * h), depthBuffer(w * h) {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) printMessageAndQuit("Could not initialise SDL: ", SDL_GetError());
 	uint32_t flags = SDL_WINDOW_OPENGL;
 	if (fullscreen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -14,7 +15,7 @@ DrawingWindow::DrawingWindow(int w, int h, bool fullscreen) : width(w), height(h
 	// Set rendering to software (hardware acceleration doesn't work on all platforms)
 	flags = SDL_RENDERER_SOFTWARE;
 	// You could try hardware acceleration if you like - by uncommenting the below line
-	// flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+	flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 	renderer = SDL_CreateRenderer(window, -1, flags);
 	if (!renderer) printMessageAndQuit("Could not create renderer: ", SDL_GetError());
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
@@ -73,10 +74,16 @@ bool DrawingWindow::pollForInputEvents(SDL_Event &event) {
 	return false;
 }
 
-void DrawingWindow::setPixelColour(size_t x, size_t y, uint32_t colour) {
+void DrawingWindow::setPixelColour(size_t x, size_t y, uint32_t colour, float depth) {
 	if ((x >= width) || (y >= height)) {
 		std::cout << x << "," << y << " not on visible screen area" << std::endl;
-	} else pixelBuffer[(y * width) + x] = colour;
+	}
+	else {
+		if (abs(depth - depthBuffer[(y * width) + x]) < 0.0001) return;
+		if (depth < depthBuffer[(y * width) + x]) return;
+		pixelBuffer[(y * width) + x] = colour;
+		depthBuffer[(y * width) + x] = depth;
+	}
 }
 
 uint32_t DrawingWindow::getPixelColour(size_t x, size_t y) {
@@ -88,6 +95,7 @@ uint32_t DrawingWindow::getPixelColour(size_t x, size_t y) {
 
 void DrawingWindow::clearPixels() {
 	std::fill(pixelBuffer.begin(), pixelBuffer.end(), 0);
+	std::fill(depthBuffer.begin(), depthBuffer.end(), 0);
 }
 
 void printMessageAndQuit(const std::string &message, const char *error) {

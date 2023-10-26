@@ -6,7 +6,8 @@ CanvasPoint getCanvasIntersectionPoint(glm::vec3 cameraPosition, glm::vec3 verte
 	glm::vec3 cameraToVertex = vertexPosition - cameraPosition;
 	int u = round(scalingFactor * (cameraToVertex.x / (focalLength - cameraToVertex.z)) + (screenWidth / 2));
 	int v = screenHeight - round(scalingFactor * (cameraToVertex.y / (focalLength - cameraToVertex.z)) + (screenHeight / 2));
-	return CanvasPoint(u, v);
+	float depth = -1 / (cameraToVertex.z);
+	return CanvasPoint(u, v, depth);
 }
 
 
