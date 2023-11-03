@@ -1,7 +1,14 @@
-#include "objParser.h"
+#include "Draw.h"
 
+Draw::Draw(DrawingWindow &window, Camera &camera): camera(camera), window(window) {
+	scene = std::vector<ModelTriangle>();
+}
 
-std::vector<ModelTriangle> loadObjFile(std::string fileName) {
+void Draw::clearScene() {
+	scene.clear();
+}
+
+void Draw::loadModel(std::string fileName) {
 	std::vector<ModelTriangle> triangles;
 
 	std::ifstream objFile(fileName);
@@ -11,7 +18,7 @@ std::vector<ModelTriangle> loadObjFile(std::string fileName) {
 		std::getline(objFile, line);
 	}
 	std::string mtlFileName = line.substr(7, line.length() - 7);
-	
+
 	std::ifstream mtlFile(mtlFileName);
 	std::string currentColourString = "";
 	std::vector<Colour> colours;
@@ -33,7 +40,7 @@ std::vector<ModelTriangle> loadObjFile(std::string fileName) {
 
 			std::string bString = line.substr(index, line.length() - index);
 			int b = round(std::stof(bString) * 255);
-			
+
 			Colour nc = Colour(currentColourString, r, g, b);
 			colours.push_back(nc);
 		}
@@ -68,7 +75,7 @@ std::vector<ModelTriangle> loadObjFile(std::string fileName) {
 		}
 		else if (line.substr(0, 6) == "usemtl") {
 			std::string colour = line.substr(7, line.length() - 7);
-			for (int j = 0; j < colours.size(); j++) {
+			for (long unsigned int j = 0; j < colours.size(); j++) {
 				if (colours[j].name == colour) {
 					currentColour = colours[j];
 				}
@@ -80,5 +87,10 @@ std::vector<ModelTriangle> loadObjFile(std::string fileName) {
 		}
 	}
 
-	return triangles;
+	objFile.close();
+	mtlFile.close();
+
+	for (long unsigned int i = 0; i < triangles.size(); i++) {
+		scene.push_back(triangles[i]);
+	}
 }

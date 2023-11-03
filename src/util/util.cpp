@@ -1,4 +1,4 @@
-#include "lerp.h"
+#include "util.h"
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values = {};
