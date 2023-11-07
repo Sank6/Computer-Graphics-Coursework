@@ -4,3 +4,4 @@ build/
 .vscode/
 .vs/
 cmake-build-debug/
+perf.data

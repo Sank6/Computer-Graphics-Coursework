@@ -8,6 +8,14 @@ void Draw::clearScene() {
 	scene.clear();
 }
 
+std::array<TexturePoint, 3> getTexture(std::string textureFileName) {
+
+	std::array<TexturePoint, 3> texturePoints;
+	TextureMap textureMap = TextureMap(textureFileName);
+
+	return texturePoints;
+}
+
 void Draw::loadModel(std::string fileName) {
 	std::vector<ModelTriangle> triangles;
 
@@ -22,6 +30,9 @@ void Draw::loadModel(std::string fileName) {
 	std::ifstream mtlFile(mtlFileName);
 	std::string currentColourString = "";
 	std::vector<Colour> colours;
+
+	std::unordered_map<std::string, std::string> textureMap;
+
 	for (int i = 0; i < 1000; i++) {
 		std::getline(mtlFile, line);
 		if (line.substr(0, 6) == "newmtl") {
@@ -43,6 +54,10 @@ void Draw::loadModel(std::string fileName) {
 
 			Colour nc = Colour(currentColourString, r, g, b);
 			colours.push_back(nc);
+		} else if (line.substr(0, 6) == "map_Kd") {
+			std::string textureFileName = line.substr(7, line.length() - 7);
+			std::string textureName = currentColourString;
+			textureMap[textureName] = textureFileName;
 		}
 
 		if (mtlFile.eof()) {
@@ -55,30 +70,63 @@ void Draw::loadModel(std::string fileName) {
 
 
 	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> textureCoords;
 	Colour currentColour = colours[0];
+	std::string currentTexture = "";
 
 	float scalingFactor = 0.35f;
 
 	for (int i = 1; i < 1000; i++) {
 		std::getline(objFile, line);
-		if (line[0] == 'v') {
+		if (line[0] == 'v' && line[1] == ' ') {
 			std::string x = line.substr(2, line.find(' ', 2) - 2);
 			std::string y = line.substr(line.find(' ', 2) + 1, line.find(' ', line.find(' ', 2) + 1) - line.find(' ', 2) - 1);
 			std::string z = line.substr(line.find(' ', line.find(' ', 2) + 1) + 1, line.length() - line.find(' ', line.find(' ', 2) + 1) - 1);
 			vertices.push_back(glm::vec3(std::stof(x), std::stof(y), std::stof(z)) * scalingFactor);
 		}
+		else if (line[0] == 'v' && line[1] == 't') {
+			std::string x = line.substr(3, line.find(' ', 3) - 3);
+			std::string y = line.substr(line.find(' ', 3) + 1, line.length() - line.find(' ', 3) - 1);
+			textureCoords.push_back(glm::vec2(std::stof(x), std::stof(y)));
+		}
 		else if (line[0] == 'f') {
-			std::string v1 = line.substr(2, line.find(' ', 2) - 2);
-			std::string v2 = line.substr(line.find(' ', 2) + 1, line.find(' ', line.find(' ', 2) + 1) - line.find(' ', 2) - 1);
-			std::string v3 = line.substr(line.find(' ', line.find(' ', 2) + 1) + 1, line.length() - line.find(' ', line.find(' ', 2) + 1) - 1);
-			triangles.push_back(ModelTriangle(vertices[std::stoi(v1) - 1], vertices[std::stoi(v2) - 1], vertices[std::stoi(v3) - 1], currentColour));
+			// example line: f 1/1 2/2 3/3
+			// example 2: f 1/ 2/ 3/
+
+			std::string v1 = line.substr(2, line.find('/', 2) - 2);
+			std::string t1 = line.substr(line.find('/', 2) + 1, line.find(' ', line.find('/', 2) + 1) - line.find('/', 2) - 1);
+			std::string v2 = line.substr(line.find(' ', line.find('/', 2) + 1) + 1, line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) - line.find(' ', line.find('/', 2) + 1) - 1);
+			std::string t2 = line.substr(line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1, line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) - line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) - 1);
+			std::string v3 = line.substr(line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1, line.find('/', line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1) - line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) - 1);
+			std::string t3 = line.substr(line.find('/', line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1) + 1, line.length() - line.find('/', line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1) - 1);
+
+			ModelTriangle t = ModelTriangle(vertices[std::stoi(v1) - 1], vertices[std::stoi(v2) - 1], vertices[std::stoi(v3) - 1], currentColour);
+			if (t1 != "" && t2 != "" && t3 != "" && textureCoords.size() > 0 && currentTexture != "") {
+				std::array<TexturePoint, 3> texturePoints;
+				texturePoints[0] = TexturePoint(textureCoords[std::stoi(t1) - 1].x, textureCoords[std::stoi(t1) - 1].y);
+				texturePoints[1] = TexturePoint(textureCoords[std::stoi(t2) - 1].x, textureCoords[std::stoi(t2) - 1].y);
+				texturePoints[2] = TexturePoint(textureCoords[std::stoi(t3) - 1].x, textureCoords[std::stoi(t3) - 1].y);
+				t.texturePoints = texturePoints;
+				t.textureMap = TextureMap(currentTexture);
+			}
+
+			this->scene.push_back(t);
 		}
 		else if (line.substr(0, 6) == "usemtl") {
 			std::string colour = line.substr(7, line.length() - 7);
+
+			// Check if texture
+
 			for (long unsigned int j = 0; j < colours.size(); j++) {
 				if (colours[j].name == colour) {
 					currentColour = colours[j];
 				}
+			}
+
+			if (textureMap.find(colour) != textureMap.end()) {
+				currentTexture = textureMap[colour];
+			} else {
+				currentTexture = "";
 			}
 		}
 

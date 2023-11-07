@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 
 #include "../util/util.h"
 #include "Camera.h"
