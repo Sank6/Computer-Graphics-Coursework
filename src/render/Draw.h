@@ -4,6 +4,7 @@
 #include <CanvasTriangle.h>
 #include <TextureMap.h>
 #include <ModelTriangle.h>
+#include <RayTriangleIntersection.h>
 #include <glm/glm.hpp>
 #include <vector>
 #include <fstream>
@@ -21,5 +22,6 @@ public:
 	Draw(DrawingWindow &window, Camera &camera);
 	void loadModel(std::string);
 	void clearScene();
-	void drawScene(bool);
+	void drawSceneRasterised(bool);
+	void drawSceneRayTraced();
 };

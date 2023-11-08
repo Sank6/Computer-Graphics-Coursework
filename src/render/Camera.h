@@ -5,12 +5,13 @@
 class Camera {
 private:
 	glm::mat3 transformation;
-	float focalLength;
 	int screenWidth, screenHeight;
 public:
 	glm::vec3 position;
+	float focalLength;
 	Camera(DrawingWindow &window);
 	CanvasPoint getCanvasIntersectionPoint(glm::vec3);
+	glm::vec3 getRayDirection(int, int, int, int);
 	void translate(glm::vec3);
 	void transform(glm::mat3);
 	void reset();

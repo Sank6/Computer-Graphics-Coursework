@@ -40,6 +40,7 @@ add_executable(
         src/util/util.cpp
         src/render/Camera.cpp
         src/render/RasterisedDraw.cpp
+        src/render/RaytracedDraw.cpp
         src/render/Scene.cpp
         src/Program.cpp
 )

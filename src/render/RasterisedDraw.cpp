@@ -1,6 +1,5 @@
 #include "Draw.h"
 
-
 std::vector<CanvasPoint> pointsOnLine(CanvasPoint from, CanvasPoint to) {
 	std::vector<CanvasPoint> points = {};
 	int numberOfSteps = std::max(abs(to.x - from.x), abs(to.y - from.y)) + 1;
@@ -24,7 +23,6 @@ void drawLine(DrawingWindow& window, CanvasPoint from, CanvasPoint to, Colour co
 		window.setPixelColour(point.x, point.y, colourInt, point.depth);
 	}
 }
-
 
 void drawStrokedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colour colour) {
 	drawLine(window, triangle->v0(), triangle->v1(), colour);
@@ -80,8 +78,7 @@ void drawFilledTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colour 
 	}
 }
 
-
-void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colour colour, TextureMap texture, std::array<TexturePoint, 3> texturePoints) {
+void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colour colour, TextureMap *texture, std::array<TexturePoint, 3> texturePoints) {
 	float xMin = std::min(std::min(triangle->v0().x, triangle->v1().x), triangle->v2().x);
 	float xMax = std::max(std::max(triangle->v0().x, triangle->v1().x), triangle->v2().x);
 	float yMin = std::min(std::min(triangle->v0().y, triangle->v1().y), triangle->v2().y);
@@ -124,8 +121,8 @@ void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colou
 			if (u >= 0.0f && v >= 0.0f && u + v < 1.0f) {
 				float textureX = texturePoints[0].x + u * (texturePoints[1].x - texturePoints[0].x) + v * (texturePoints[2].x - texturePoints[0].x);
 				float textureY = texturePoints[0].y + u * (texturePoints[1].y - texturePoints[0].y) + v * (texturePoints[2].y - texturePoints[0].y);
-				int index = std::max(0, std::min(int(textureY * texture.height), int(texture.height - 1))) * texture.width + std::max(0, std::min(int(textureX * texture.width), int(texture.width - 1)));
-				u_int32_t textureColour = texture.pixels[index];
+				int index = std::max(0, std::min(int(textureY * texture->height), int(texture->height - 1))) * texture->width + std::max(0, std::min(int(textureX * texture->width), int(texture->width - 1)));
+				u_int32_t textureColour = texture->pixels[index];
 				window.setPixelColour(x, y, textureColour, depth);
 			}
 		}
@@ -146,11 +143,11 @@ void drawTriangle3D(DrawingWindow& window, Camera& camera, ModelTriangle *triang
 	CanvasTriangle canvasTriangle = CanvasTriangle(canvasPoint0, canvasPoint1, canvasPoint2);
 
 	if (wireframe) drawStrokedTriangle(window, &canvasTriangle, colour);
-	else if (triangle->textureMap.pixels.size() > 0) drawTexturedTriangle(window, &canvasTriangle, colour, triangle->textureMap, triangle->texturePoints);
+	else if (triangle->textureMap.pixels.size() > 0) drawTexturedTriangle(window, &canvasTriangle, colour, &triangle->textureMap, triangle->texturePoints);
 	else drawFilledTriangle(window, &canvasTriangle, colour);
 }
 
-void Draw::drawScene(bool wireframe) {
+void Draw::drawSceneRasterised(bool wireframe) {
 	window.clearPixels();
 	for (long unsigned int i = 0; i < scene.size(); i++) {
 		drawTriangle3D(window, camera, &scene[i], wireframe);

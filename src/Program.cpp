@@ -44,7 +44,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        draw.drawScene(wireframe);
+        // draw.drawSceneRasterised(wireframe);
+        draw.drawSceneRayTraced();
         if (rotating) camera.rotateY(rotationSpeed);
 
         window.renderFrame();
@@ -53,6 +54,6 @@ int main(int argc, char* argv[]) {
         uint32_t end = SDL_GetTicks();
         uint32_t duration = end - start;
         float fps = 1000.0f / duration;
-        // std::cout << "FPS: " << fps << std::endl;
+        std::cout << "FPS: " << fps << std::endl;
     }
 }

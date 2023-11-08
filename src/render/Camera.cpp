@@ -3,7 +3,7 @@
 Camera::Camera(DrawingWindow &window) {
 	position = glm::vec3(0.0f, 0.0f, 4.0f);
 	transformation = glm::mat3(1.0f);
-	focalLength = 2.0f;
+	focalLength = 20.0f;
 	screenWidth = window.width;
 	screenHeight = window.height;
 }
@@ -17,6 +17,22 @@ CanvasPoint Camera::getCanvasIntersectionPoint(glm::vec3 vertexPosition) {
 	int v = screenHeight - round(scalingFactor * (cameraToVertex.y / (focalLength - cameraToVertex.z)) + (screenHeight / 2));
 	float depth = - 1 / (cameraToVertex.z);
 	return CanvasPoint(u, v, depth);
+}
+
+glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeight) {
+	// Convert canvas coordinates to normalized device coordinates (range [-1, 1])
+    float ndcX = (2.0f * u) / screenWidth - 1.0f;
+    float ndcY = 1.0f - (2.0f * v) / screenHeight; // Invert Y
+
+    // Convert NDC to camera space (before projection)
+    float cameraSpaceX = ndcX * (focalLength * screenWidth / screenHeight);
+    float cameraSpaceY = ndcY * focalLength;
+    float cameraSpaceZ = -focalLength;
+
+    glm::vec3 cameraSpacePosition = glm::vec3(cameraSpaceX, cameraSpaceY, cameraSpaceZ);
+    glm::vec3 rayDirection = glm::inverse(transformation) * cameraSpacePosition;
+
+	return glm::normalize(rayDirection);
 }
 
 void Camera::translate(glm::vec3 translation) {
