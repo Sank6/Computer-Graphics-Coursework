@@ -147,9 +147,14 @@ void drawTriangle3D(DrawingWindow& window, Camera& camera, ModelTriangle *triang
 	else drawFilledTriangle(window, &canvasTriangle, colour);
 }
 
-void Draw::drawSceneRasterised(bool wireframe) {
-	window.clearPixels();
+void Draw::drawSceneRasterised() {
 	for (long unsigned int i = 0; i < scene.size(); i++) {
-		drawTriangle3D(window, camera, &scene[i], wireframe);
+		drawTriangle3D(window, camera, &scene[i], false);
+	}
+}
+
+void Draw::drawSceneWireFrame() {
+	for (long unsigned int i = 0; i < scene.size(); i++) {
+		drawTriangle3D(window, camera, &scene[i], true);
 	}
 }

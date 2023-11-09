@@ -94,7 +94,7 @@ glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeigh
 	glm::vec4 rayDirection4 = glm::vec4(x, y, z, 0.0f);
 	glm::vec4 rayDirection4Transformed = glm::inverse(transformation) * rayDirection4;
 
-	glm::vec3 rayDirection3Transformed = glm::vec3(rayDirection4Transformed.x, rayDirection4Transformed.y, rayDirection4Transformed.z);
+	glm::vec3 rayDirection3Transformed = glm::vec3(rayDirection4Transformed.x, rayDirection4Transformed.y, rayDirection4Transformed.z);// / rayDirection4Transformed.w;
 
 	return glm::normalize(rayDirection3Transformed);
 }

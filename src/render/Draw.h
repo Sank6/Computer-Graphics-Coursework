@@ -22,6 +22,7 @@ public:
 	Draw(DrawingWindow &window, Camera &camera);
 	void loadModel(std::string);
 	void clearScene();
-	void drawSceneRasterised(bool);
+	void drawSceneRasterised();
+	void drawSceneWireFrame();
 	void drawSceneRayTraced();
 };

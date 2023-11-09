@@ -44,7 +44,6 @@ void fillScreen(uint32_t colour, DrawingWindow &window) {
         
 
 void Draw::drawSceneRayTraced() {
-    window.clearPixels();
     for (size_t x = 0; x < window.width; x++) {
         for (size_t y = 0; y < window.height; y++) {
             glm::vec3 rayDirection = camera.getRayDirection(x, y, window.width, window.height);
@@ -54,6 +53,5 @@ void Draw::drawSceneRayTraced() {
                 window.setPixelColour(x, y, colourToInt(scene[closestIntersection.triangleIndex].colour), 1);
             }
         }
-        std::cout << "Column " << x << " of " << window.width << " rendered" << std::endl;
     }
 }
