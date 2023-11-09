@@ -10,10 +10,9 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
     closestIntersection.triangleIndex = -1;
 
     for (size_t i = 0; i < scene->size(); i++) {
-        ModelTriangle triangle = scene->at(i);
-        glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
-        glm::vec3 e1 = triangle.vertices[2] - triangle.vertices[0];
-        glm::vec3 SPVector = rayOrigin - triangle.vertices[0];
+        glm::vec3 e0 = scene->at(i).vertices[1] - scene->at(i).vertices[0];
+        glm::vec3 e1 = scene->at(i).vertices[2] - scene->at(i).vertices[0];
+        glm::vec3 SPVector = rayOrigin - scene->at(i).vertices[0];
         glm::mat3 DEMatrix(-rayDirection, e0, e1);
         glm::vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;
 
@@ -28,7 +27,7 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         if (u >= 0 && v >= 0 && u + v <= 1 && t > 0 && t < closestIntersection.distanceFromCamera) {
             closestIntersection.distanceFromCamera = t;
             closestIntersection.intersectionPoint = rayOrigin + t * rayDirection;
-            closestIntersection.intersectedTriangle = triangle;
+            closestIntersection.intersectedTriangle = scene->at(i);
             closestIntersection.triangleIndex = (long) i;
         }
     }
@@ -47,13 +46,13 @@ void fillScreen(uint32_t colour, DrawingWindow &window) {
 
 void Draw::drawSceneRayTraced() {
     window.clearPixels();
-    for (size_t x = 250; x < window.width; x++) {
+    for (size_t x = 0; x < window.width; x++) {
         for (size_t y = 0; y < window.height; y++) {
             glm::vec3 rayDirection = camera.getRayDirection(x, y, window.width, window.height);
             glm::vec3 rayOrigin = camera.getPosition();
             RayTriangleIntersection closestIntersection = getClosestValidIntersection(rayDirection, rayOrigin, &scene);
             if (closestIntersection.triangleIndex != -1) {
-                std::cout << std::hex << closestIntersection.intersectedTriangle.colour << std::endl;
+                // std::cout << std::hex << closestIntersection.intersectedTriangle.colour << std::endl;
                 window.setPixelColour(x, y, colourToInt(closestIntersection.intersectedTriangle.colour), 1);
             }
         }

@@ -25,10 +25,6 @@ CanvasPoint Camera::getCanvasIntersectionPoint(glm::vec3 vertexPosition) {
 	return CanvasPoint(u, v, depth);
 }
 
-glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeight) {
-	return glm::vec3(0.0f, 0.0f, 0.0f);
-}
-
 glm::vec3 Camera::getPosition() {
 	return glm::vec3(transformation[3][0], transformation[3][1], transformation[3][2]);
 }
@@ -87,4 +83,18 @@ void Camera::rotateAroundPoint(glm::vec3 point, float angle, Axis axis) {
 	if (axis == X) this->transform(translateToPoint * rotationX * translateBack);
 	if (axis == Y) this->transform(translateToPoint * rotationY * translateBack);
 	if (axis == Z) this->transform(translateToPoint * rotationZ * translateBack);
+}
+
+glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeight) {
+	float scalingFactor = screenHeight * focalLength;
+	float x = (u - (screenWidth / 2)) / scalingFactor;
+	float y = ((screenHeight / 2) - v) / scalingFactor;
+	float z = -1.0f;
+
+	glm::vec4 rayDirection4 = glm::vec4(x, y, z, 0.0f);
+	glm::vec4 rayDirection4Transformed = glm::inverse(transformation) * rayDirection4;
+
+	glm::vec3 rayDirection3Transformed = glm::vec3(rayDirection4Transformed.x, rayDirection4Transformed.y, rayDirection4Transformed.z);
+
+	return glm::normalize(rayDirection3Transformed);
 }
