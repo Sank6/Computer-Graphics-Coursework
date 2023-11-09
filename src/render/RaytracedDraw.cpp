@@ -22,12 +22,11 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
 
         if (u != u || v != v || t != t) continue;
 
-        // if (u >= 0 && v >= 0 && u + v <= 1) std::cout << "I: " << i << " U: " << u << " V: " << v << " T: " << t << std::endl;
 
         if (u >= 0 && v >= 0 && u + v <= 1 && t > 0 && t < closestIntersection.distanceFromCamera) {
             closestIntersection.distanceFromCamera = t;
             closestIntersection.intersectionPoint = rayOrigin + t * rayDirection;
-            closestIntersection.intersectedTriangle = scene->at(i);
+            // closestIntersection.intersectedTriangle = scene->at(i);
             closestIntersection.triangleIndex = (long) i;
         }
     }
@@ -52,12 +51,9 @@ void Draw::drawSceneRayTraced() {
             glm::vec3 rayOrigin = camera.getPosition();
             RayTriangleIntersection closestIntersection = getClosestValidIntersection(rayDirection, rayOrigin, &scene);
             if (closestIntersection.triangleIndex != -1) {
-                // std::cout << std::hex << closestIntersection.intersectedTriangle.colour << std::endl;
-                window.setPixelColour(x, y, colourToInt(closestIntersection.intersectedTriangle.colour), 1);
+                window.setPixelColour(x, y, colourToInt(scene[closestIntersection.triangleIndex].colour), 1);
             }
         }
-        std::cout << "Row " << x << " of " << window.width << " rendered" << std::endl;
-        window.renderFrame();
+        std::cout << "Column " << x << " of " << window.width << " rendered" << std::endl;
     }
-    std::cout << "Rays traced" << std::endl;
 }

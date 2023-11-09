@@ -89,7 +89,7 @@ glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeigh
 	float scalingFactor = screenHeight * focalLength;
 	float x = (u - (screenWidth / 2)) / scalingFactor;
 	float y = ((screenHeight / 2) - v) / scalingFactor;
-	float z = -1.0f;
+	float z = -1.0f / focalLength;
 
 	glm::vec4 rayDirection4 = glm::vec4(x, y, z, 0.0f);
 	glm::vec4 rayDirection4Transformed = glm::inverse(transformation) * rayDirection4;
