@@ -16,7 +16,6 @@ int main(int argc, char* argv[]) {
 
 
     float rotationSpeed = 0.01f;
-
     float translationSpeed = 0.1f;
     bool rotating = false;
     bool wireframe = false;
@@ -37,16 +36,16 @@ int main(int argc, char* argv[]) {
                 if (event.key.keysym.sym == SDLK_r) camera.reset();
                 if (event.key.keysym.sym == SDLK_f) wireframe = !wireframe;
                 if (event.key.keysym.sym == SDLK_SPACE) rotating = !rotating;
-                if (event.key.keysym.sym == SDLK_UP) camera.rotateX(-rotationSpeed);
-                if (event.key.keysym.sym == SDLK_DOWN) camera.rotateX(rotationSpeed);
-				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateY(-rotationSpeed);
-				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateY(rotationSpeed);
+                if (event.key.keysym.sym == SDLK_UP) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), -rotationSpeed, X);
+                if (event.key.keysym.sym == SDLK_DOWN) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, X);
+				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), -rotationSpeed, Y);
+				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, Y);
             }
         }
 
-        // draw.drawSceneRasterised(wireframe);
-        draw.drawSceneRayTraced();
-        if (rotating) camera.rotateY(rotationSpeed);
+        draw.drawSceneRasterised(wireframe);
+        // draw.drawSceneRayTraced();
+        if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, Y);
 
         window.renderFrame();
 
@@ -54,6 +53,6 @@ int main(int argc, char* argv[]) {
         uint32_t end = SDL_GetTicks();
         uint32_t duration = end - start;
         float fps = 1000.0f / duration;
-        std::cout << "FPS: " << fps << std::endl;
+        // std::cout << "FPS: " << fps << std::endl;
     }
 }

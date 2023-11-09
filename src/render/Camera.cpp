@@ -1,76 +1,90 @@
 #include "Camera.h"
 
+
 Camera::Camera(DrawingWindow &window) {
-	position = glm::vec3(0.0f, 0.0f, 4.0f);
-	transformation = glm::mat3(1.0f);
-	focalLength = 20.0f;
+	transformation = glm::mat4(1.0f);
+	focalLength = 2.0f;
 	screenWidth = window.width;
 	screenHeight = window.height;
+	this->translate(glm::vec3(0.0f, 0.0f, 4.0f));
 }
 
 CanvasPoint Camera::getCanvasIntersectionPoint(glm::vec3 vertexPosition) {
-	glm::mat3 transformationInverse = glm::inverse(transformation);
-	vertexPosition = transformationInverse * vertexPosition;
+	glm::vec4 vertexPosition4 = glm::vec4(vertexPosition, 1.0f);
+	glm::vec4 vertexPosition4Transformed = glm::inverse(transformation) * vertexPosition4;
+
+	glm::vec3 vertexPosition3Transformed = glm::vec3(vertexPosition4Transformed.x, vertexPosition4Transformed.y, vertexPosition4Transformed.z) / vertexPosition4Transformed.w;
+
 	int scalingFactor = screenHeight * focalLength;
-	glm::vec3 cameraToVertex = vertexPosition - position;
-	int u = round(scalingFactor * (cameraToVertex.x / (focalLength - cameraToVertex.z)) + (screenWidth / 2));
-	int v = screenHeight - round(scalingFactor * (cameraToVertex.y / (focalLength - cameraToVertex.z)) + (screenHeight / 2));
-	float depth = - 1 / (cameraToVertex.z);
+
+	int u = round((screenWidth / 2) + scalingFactor * (vertexPosition3Transformed.x / (focalLength - vertexPosition3Transformed.z)));
+	int v = round((screenHeight / 2) - scalingFactor * (vertexPosition3Transformed.y / (focalLength - vertexPosition3Transformed.z)));
+
+	float depth = 1 / (focalLength - vertexPosition3Transformed.z);
+
 	return CanvasPoint(u, v, depth);
 }
 
 glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeight) {
-	// Convert canvas coordinates to normalized device coordinates (range [-1, 1])
-    float ndcX = (2.0f * u) / screenWidth - 1.0f;
-    float ndcY = 1.0f - (2.0f * v) / screenHeight; // Invert Y
+	return glm::vec3(0.0f, 0.0f, 0.0f);
+}
 
-    // Convert NDC to camera space (before projection)
-    float cameraSpaceX = ndcX * (focalLength * screenWidth / screenHeight);
-    float cameraSpaceY = ndcY * focalLength;
-    float cameraSpaceZ = -focalLength;
-
-    glm::vec3 cameraSpacePosition = glm::vec3(cameraSpaceX, cameraSpaceY, cameraSpaceZ);
-    glm::vec3 rayDirection = glm::inverse(transformation) * cameraSpacePosition;
-
-	return glm::normalize(rayDirection);
+glm::vec3 Camera::getPosition() {
+	return glm::vec3(transformation[3][0], transformation[3][1], transformation[3][2]);
 }
 
 void Camera::translate(glm::vec3 translation) {
-	position = position + translation;
+	transformation[3][0] += translation.x;
+	transformation[3][1] += translation.y;
+	transformation[3][2] += translation.z;
 }
 
-void Camera::transform(glm::mat3 newTransformation) {
+void Camera::transform(glm::mat4 newTransformation) {
 	transformation = newTransformation * transformation;
 }
 
 void Camera::reset() {
-	position = glm::vec3(0.0f, 0.0f, 4.0f);
-	transformation = glm::mat3(1.0f);
+	transformation = glm::mat4(1.0f);
+	this->translate(glm::vec3(0.0f, 0.0f, 4.0f));
 }
 
-void Camera::rotateX(float angle) {
-	glm::mat3 rotationMatrix = glm::mat3(1.0f);
-	rotationMatrix[1][1] = cos(angle);
-	rotationMatrix[1][2] = -sin(angle);
-	rotationMatrix[2][1] = sin(angle);
-	rotationMatrix[2][2] = cos(angle);
-	transform(rotationMatrix);
-}
+void Camera::rotateAroundPoint(glm::vec3 point, float angle, Axis axis) {
+	glm::mat4 translateToPoint = {
+		1.0f, 0.0f, 0.0f, -point.x,
+		0.0f, 1.0f, 0.0f, -point.y,
+		0.0f, 0.0f, 1.0f, -point.z,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
 
-void Camera::rotateY(float angle) {
-	glm::mat3 rotationMatrix = glm::mat3(1.0f);
-	rotationMatrix[0][0] = cos(angle);
-	rotationMatrix[0][2] = sin(angle);
-	rotationMatrix[2][0] = -sin(angle);
-	rotationMatrix[2][2] = cos(angle);
-	transform(rotationMatrix);
-}
+	glm::mat4 rotationX = {
+		1, 0, 0, 0,
+		0, cos(angle), -sin(angle), 0,
+		0, sin(angle), cos(angle), 0,
+		0, 0, 0, 1
+	};
 
-void Camera::rotateZ(float angle) {
-	glm::mat3 rotationMatrix = glm::mat3(1.0f);
-	rotationMatrix[0][0] = cos(angle);
-	rotationMatrix[0][1] = -sin(angle);
-	rotationMatrix[1][0] = sin(angle);
-	rotationMatrix[1][1] = cos(angle);
-	transform(rotationMatrix);
+	glm::mat4 rotationY = {
+		cos(angle), 0, sin(angle), 0,
+		0, 1, 0, 0,
+		-sin(angle), 0, cos(angle), 0,
+		0, 0, 0, 1
+	};
+
+	glm::mat4 rotationZ = {
+		cos(angle), -sin(angle), 0, 0,
+		sin(angle),  cos(angle), 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	glm::mat4 translateBack = {
+		1, 0, 0, point.x,
+		0, 1, 0, point.y,
+		0, 0, 1, point.z,
+		0, 0, 0, 1
+	};
+
+	if (axis == X) this->transform(translateToPoint * rotationX * translateBack);
+	if (axis == Y) this->transform(translateToPoint * rotationY * translateBack);
+	if (axis == Z) this->transform(translateToPoint * rotationZ * translateBack);
 }

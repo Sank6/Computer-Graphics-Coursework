@@ -50,7 +50,7 @@ void Draw::drawSceneRayTraced() {
     for (size_t x = 250; x < window.width; x++) {
         for (size_t y = 0; y < window.height; y++) {
             glm::vec3 rayDirection = camera.getRayDirection(x, y, window.width, window.height);
-            glm::vec3 rayOrigin = camera.position;
+            glm::vec3 rayOrigin = camera.getPosition();
             RayTriangleIntersection closestIntersection = getClosestValidIntersection(rayDirection, rayOrigin, &scene);
             if (closestIntersection.triangleIndex != -1) {
                 std::cout << std::hex << closestIntersection.intersectedTriangle.colour << std::endl;
