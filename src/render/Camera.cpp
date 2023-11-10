@@ -10,19 +10,33 @@ Camera::Camera(DrawingWindow &window) {
 }
 
 CanvasPoint Camera::getCanvasIntersectionPoint(glm::vec3 vertexPosition) {
-	glm::vec4 vertexPosition4 = glm::vec4(vertexPosition, 1.0f);
-	glm::vec4 vertexPosition4Transformed = glm::inverse(transformation) * vertexPosition4;
+	glm::vec4 vertexPos4 = glm::vec4(vertexPosition, 1.0f);
+	glm::vec4 vertexPos4T = glm::inverse(transformation) * vertexPos4;
 
-	glm::vec3 vertexPosition3Transformed = glm::vec3(vertexPosition4Transformed.x, vertexPosition4Transformed.y, vertexPosition4Transformed.z) / vertexPosition4Transformed.w;
+	glm::vec3 vertexPos3 = glm::vec3(vertexPos4T) / vertexPos4T.w;
 
 	int scalingFactor = screenHeight * focalLength;
 
-	int u = round((screenWidth / 2) + scalingFactor * (vertexPosition3Transformed.x / (focalLength - vertexPosition3Transformed.z)));
-	int v = round((screenHeight / 2) - scalingFactor * (vertexPosition3Transformed.y / (focalLength - vertexPosition3Transformed.z)));
+	int u = round((screenWidth / 2) + scalingFactor * (vertexPos3.x / (focalLength - vertexPos3.z)));
+	int v = round((screenHeight / 2) - scalingFactor * (vertexPos3.y / (focalLength - vertexPos3.z)));
 
-	float depth = 1 / (focalLength - vertexPosition3Transformed.z);
+	float depth = 1 / (focalLength - vertexPos3.z);
 
 	return CanvasPoint(u, v, depth);
+}
+
+glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeight) {
+	float scalingFactor = screenHeight * focalLength;
+	float z = -0.6f;
+	float x = (u - (screenWidth / 2)) / scalingFactor;
+	float y = (v - (screenHeight / 2)) / -scalingFactor;
+
+	glm::vec4 rayDirection4 = glm::vec4(x, y, z, 0.0f);
+	glm::vec4 rayDirection4Transformed = transformation * rayDirection4;
+
+	glm::vec3 rayDirection3Transformed = glm::vec3(rayDirection4Transformed.x, rayDirection4Transformed.y, rayDirection4Transformed.z);
+
+	return glm::normalize(rayDirection3Transformed);
 }
 
 glm::vec3 Camera::getPosition() {
@@ -83,18 +97,4 @@ void Camera::rotateAroundPoint(glm::vec3 point, float angle, Axis axis) {
 	if (axis == X) this->transform(translateToPoint * rotationX * translateBack);
 	if (axis == Y) this->transform(translateToPoint * rotationY * translateBack);
 	if (axis == Z) this->transform(translateToPoint * rotationZ * translateBack);
-}
-
-glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeight) {
-	float scalingFactor = screenHeight * focalLength;
-	float x = (u - (screenWidth / 2)) / scalingFactor;
-	float y = ((screenHeight / 2) - v) / scalingFactor;
-	float z = -1.0f / focalLength;
-
-	glm::vec4 rayDirection4 = glm::vec4(x, y, z, 0.0f);
-	glm::vec4 rayDirection4Transformed = glm::inverse(transformation) * rayDirection4;
-
-	glm::vec3 rayDirection3Transformed = glm::vec3(rayDirection4Transformed.x, rayDirection4Transformed.y, rayDirection4Transformed.z);// / rayDirection4Transformed.w;
-
-	return glm::normalize(rayDirection3Transformed);
 }

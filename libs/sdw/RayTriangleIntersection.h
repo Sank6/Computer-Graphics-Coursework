@@ -9,6 +9,11 @@ struct RayTriangleIntersection {
 	float distanceFromCamera;
 	ModelTriangle intersectedTriangle;
 	long triangleIndex;
+	uint32_t textureColour;
+
+	// Barycentric coordinates
+	float u;
+	float v;
 
 	RayTriangleIntersection();
 	RayTriangleIntersection(const glm::vec3 &point, float distance, const ModelTriangle &triangle, size_t index);

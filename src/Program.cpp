@@ -23,7 +23,6 @@ int main(int argc, char* argv[]) {
     bool rotating = false;
     Mode mode = RAYTRACED;
 
-    // hashmap of FPS for each mode
     std::unordered_map<Mode, Fps> fpsMap;
     fpsMap[WIREFRAME] = Fps();
     fpsMap[RASTERISED] = Fps();
@@ -53,6 +52,9 @@ int main(int argc, char* argv[]) {
 				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, Y);
             }
         }
+
+        if (mode == RAYTRACED) rotationSpeed = 0.1f;
+        else rotationSpeed = 0.01f;
         
         if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, Y);
 

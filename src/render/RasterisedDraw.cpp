@@ -83,7 +83,6 @@ void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colou
 	float xMax = std::max(std::max(triangle->v0().x, triangle->v1().x), triangle->v2().x);
 	float yMin = std::min(std::min(triangle->v0().y, triangle->v1().y), triangle->v2().y);
 	float yMax = std::max(std::max(triangle->v0().y, triangle->v1().y), triangle->v2().y);
-	u_int32_t colourInt = (255 << 24) + (int(colour.red) << 16) + (int(colour.green) << 8) + int(colour.blue);
 
 	CanvasPoint p0 = triangle->v0();
 	CanvasPoint p1 = triangle->v1();
@@ -102,6 +101,7 @@ void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colou
 	double dot11 = v1.x * v1.x + v1.y * v1.y;
 	double dot12 = v1.x * v2.x + v1.y * v2.y;
 	double dot22 = v2.x * v2.x + v2.y * v2.y;
+	double denom = (dot11 * dot22 - dot12 * dot12);
 
 	for (float x = xMin; x <= xMax; x++) {
 		for (float y = yMin; y <= yMax; y++) {
@@ -112,13 +112,11 @@ void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colou
 			double dot23 = v2.x * v3.x + v2.y * v3.y;
 			double dot33 = v3.x * v3.x + v3.y * v3.y;
 
-			double denom = (dot11 * dot22 - dot12 * dot12);
 			double u = (dot22 * dot13 - dot12 * dot23) / denom;
 			double v = (dot11 * dot23 - dot12 * dot13) / denom;
 
-			float depth = p0.depth + u * (p1.depth - p0.depth) + v * (p2.depth - p0.depth);
-
 			if (u >= 0.0f && v >= 0.0f && u + v < 1.0f) {
+				float depth = p0.depth + u * (p1.depth - p0.depth) + v * (p2.depth - p0.depth);
 				float textureX = texturePoints[0].x + u * (texturePoints[1].x - texturePoints[0].x) + v * (texturePoints[2].x - texturePoints[0].x);
 				float textureY = texturePoints[0].y + u * (texturePoints[1].y - texturePoints[0].y) + v * (texturePoints[2].y - texturePoints[0].y);
 				int index = std::max(0, std::min(int(textureY * texture->height), int(texture->height - 1))) * texture->width + std::max(0, std::min(int(textureX * texture->width), int(texture->width - 1)));
