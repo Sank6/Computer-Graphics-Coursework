@@ -1,6 +1,6 @@
 #include "Draw.h"
 
-Draw::Draw(DrawingWindow &window, Camera &camera): camera(camera), window(window) {
+Draw::Draw(DrawingWindow &window, Camera &camera): window(window), camera(camera) {
 	scene = std::vector<ModelTriangle>();
 }
 
@@ -141,4 +141,13 @@ void Draw::loadModel(std::string fileName) {
 	for (long unsigned int i = 0; i < triangles.size(); i++) {
 		scene.push_back(triangles[i]);
 	}
+}
+
+Light::Light() = default;
+Light::Light(glm::vec3 position, float intensity, bool state): position(position), intensity(intensity), state(state) {}
+
+
+void Draw::addLight(glm::vec3 position, float intensity) {
+	Light light = Light(position, intensity, true);
+	lights.push_back(light);
 }
