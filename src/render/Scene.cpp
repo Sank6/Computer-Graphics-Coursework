@@ -110,6 +110,8 @@ void Draw::loadModel(std::string fileName) {
 				t.textureMap = TextureMap(currentTexture);
 			}
 
+			t.normal = glm::normalize(glm::cross(t.vertices[1] - t.vertices[0], t.vertices[2] - t.vertices[0]));
+
 			this->scene.push_back(t);
 		}
 		else if (line.substr(0, 6) == "usemtl") {

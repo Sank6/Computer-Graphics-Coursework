@@ -65,13 +65,12 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         closestIntersection.textureColour = triangle.textureMap.pixels[index];
     }
 
-    glm::vec3 normal = glm::normalize(glm::cross(triangle.vertices[1] - triangle.vertices[0], triangle.vertices[2] - triangle.vertices[0]));
     for (size_t j = 0; j < lights->size(); j++) {
         glm::vec3 lightRayDirection = glm::normalize((*lights)[j].position - closestIntersection.intersectionPoint);
         glm::vec3 lightRayOrigin = closestIntersection.intersectionPoint;
         
         float distanceToLight = glm::distance(closestIntersection.intersectionPoint, (*lights)[j].position);
-        float angleOfIncidence = glm::dot(normal, -lightRayDirection);
+        float angleOfIncidence = glm::dot(triangle.normal, -lightRayDirection);
 
         // Light falloff
         uint32_t colour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, distanceToLight * distanceToLight)));

@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     Camera camera = Camera(window);
     Draw draw = Draw(window, camera);
     draw.loadModel("../../../cornell-box.obj");
-    draw.addLight(glm::vec3(0.0f, 0.8f, 1.0f), 1.5f);
+    draw.addLight(glm::vec3(0.0f, 0.8f, 0.5f), 1.5f);
 
     float rotationSpeed = 0.01f;
     float translationSpeed = 0.1f;
