@@ -65,18 +65,27 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         closestIntersection.textureColour = triangle.textureMap.pixels[index];
     }
 
+    glm::vec3 normal = glm::normalize(glm::cross(triangle.vertices[1] - triangle.vertices[0], triangle.vertices[2] - triangle.vertices[0]));
     for (size_t j = 0; j < lights->size(); j++) {
         glm::vec3 lightRayDirection = glm::normalize((*lights)[j].position - closestIntersection.intersectionPoint);
         glm::vec3 lightRayOrigin = closestIntersection.intersectionPoint;
-        RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, lights, i, j);
         
-        //closestIntersection.textureColour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, shadowIntersection.distanceFromCamera * shadowIntersection.distanceFromCamera)));
-        if (shadowIntersection.triangleIndex != -1) {
-            float distanceToLight = glm::distance(closestIntersection.intersectionPoint, (*lights)[j].position);
-            closestIntersection.textureColour = brighten(closestIntersection.textureColour, 1 / std::max(1.0f,  2 * distanceToLight * distanceToLight));
-        }
-        else closestIntersection.textureColour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, shadowIntersection.distanceFromCamera * shadowIntersection.distanceFromCamera)));
-        closestIntersection.textureColour = brighten(closestIntersection.textureColour, (*lights)[j].intensity);
+        float distanceToLight = glm::distance(closestIntersection.intersectionPoint, (*lights)[j].position);
+        float angleOfIncidence = glm::dot(normal, -lightRayDirection);
+
+        // Light falloff
+        uint32_t colour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, distanceToLight * distanceToLight)));
+        
+        
+        // Shadows
+        RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, lights, i, j);
+        if (shadowIntersection.triangleIndex != -1) colour = brighten(closestIntersection.textureColour, 1 / std::max(1.0f,  2 * distanceToLight * distanceToLight));
+
+        // Angle of incidence lighting
+        if (angleOfIncidence > 0) closestIntersection.textureColour = brighten(colour, angleOfIncidence);
+
+        // Light intensity
+        closestIntersection.textureColour = brighten(colour, (*lights)[j].intensity);
     }
 
     return closestIntersection;

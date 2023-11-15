@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     Camera camera = Camera(window);
     Draw draw = Draw(window, camera);
     draw.loadModel("../../../cornell-box.obj");
-    draw.addLight(glm::vec3(0.0f, 0.8f, 0.5f), 1.1f);
+    draw.addLight(glm::vec3(0.0f, 0.8f, 1.5f), 1.5f);
 
     float rotationSpeed = 0.01f;
     float translationSpeed = 0.1f;
@@ -46,17 +46,17 @@ int main(int argc, char* argv[]) {
                 else if (event.key.keysym.sym == SDLK_m && mode == RAYTRACED) mode = WIREFRAME;
                 else if (event.key.keysym.sym == SDLK_m && mode == WIREFRAME) mode = RASTERISED;
                 if (event.key.keysym.sym == SDLK_SPACE) rotating = !rotating;
-                if (event.key.keysym.sym == SDLK_UP) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), -rotationSpeed, X);
-                if (event.key.keysym.sym == SDLK_DOWN) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, X);
-				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), -rotationSpeed, Y);
-				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, Y);
+                if (event.key.keysym.sym == SDLK_UP) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, X);
+                if (event.key.keysym.sym == SDLK_DOWN) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, X);
+				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, Y);
+				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, Y);
             }
         }
 
         if (mode == RAYTRACED) rotationSpeed = 0.1f;
         else rotationSpeed = 0.01f;
         
-        if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f, 0.0f, 0.0f), rotationSpeed, Y);
+        if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, Y);
 
         window.clearPixels();
         if (mode == WIREFRAME) draw.drawSceneWireFrame();
@@ -73,6 +73,6 @@ int main(int argc, char* argv[]) {
         fpsMap[mode].average = (fpsMap[mode].average * fpsMap[mode].count + fps) / (fpsMap[mode].count + 1);
         fpsMap[mode].count++;
 
-        std::cout << "Mode: " << mode << " FPS: " << fps << " Average: " << fpsMap[mode].average << std::endl;
+        // std::cout << "Mode: " << mode << " FPS: " << fps << " Average: " << fpsMap[mode].average << std::endl;
     }
 }

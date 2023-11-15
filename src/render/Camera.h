@@ -15,7 +15,7 @@ public:
 	glm::vec3 getRayDirection(int, int, int, int);
 	glm::vec3 getPosition();
 	void translate(glm::vec3);
-	void transform(glm::mat4);
+	void transform(glm::mat4, bool);
 	void reset();
 	void rotateAroundPoint(glm::vec3, float, Axis);
 };

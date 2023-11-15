@@ -49,8 +49,9 @@ void Camera::translate(glm::vec3 translation) {
 	transformation[3][2] += translation.z;
 }
 
-void Camera::transform(glm::mat4 newTransformation) {
-	transformation = newTransformation * transformation;
+void Camera::transform(glm::mat4 newTransformation, bool global = true) {
+	if (global) transformation = newTransformation * transformation;
+	else transformation = transformation * newTransformation;
 }
 
 void Camera::reset() {
@@ -94,7 +95,7 @@ void Camera::rotateAroundPoint(glm::vec3 point, float angle, Axis axis) {
 		0, 0, 0, 1
 	};
 
-	if (axis == X) this->transform(translateToPoint * rotationX * translateBack);
-	if (axis == Y) this->transform(translateToPoint * rotationY * translateBack);
-	if (axis == Z) this->transform(translateToPoint * rotationZ * translateBack);
+	if (axis == X) this->transform(translateToPoint * rotationX * translateBack, true);
+	if (axis == Y) this->transform(translateToPoint * rotationY * translateBack, true);
+	if (axis == Z) this->transform(translateToPoint * rotationZ * translateBack, true);
 }
