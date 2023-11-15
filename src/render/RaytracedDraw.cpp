@@ -75,16 +75,16 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
 
         // Light falloff
         uint32_t colour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, distanceToLight * distanceToLight)));
-        
-        
+
         // Shadows
         RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, lights, i, j);
         if (shadowIntersection.triangleIndex != -1) colour = brighten(closestIntersection.textureColour, 1 / std::max(1.0f,  2 * distanceToLight * distanceToLight));
 
         // Angle of incidence lighting
-        if (angleOfIncidence > 0) closestIntersection.textureColour = brighten(colour, angleOfIncidence);
+        float clamp = 0.2f;
+        if (angleOfIncidence > 0) colour = brighten(colour, angleOfIncidence * clamp + 1 - clamp);
 
-        // Light intensity
+        // Light intensity and add to pixel
         closestIntersection.textureColour = brighten(colour, (*lights)[j].intensity);
     }
 
