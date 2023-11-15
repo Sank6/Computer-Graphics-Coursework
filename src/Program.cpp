@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     Camera camera = Camera(window);
     Draw draw = Draw(window, camera);
     draw.loadModel("../../../cornell-box.obj");
-    draw.addLight(glm::vec3(0.0f, 0.8f, 0.0f), 1.0f);
+    draw.addLight(glm::vec3(0.0f, 0.8f, 0.5f), 1.1f);
 
     float rotationSpeed = 0.01f;
     float translationSpeed = 0.1f;
@@ -72,5 +72,7 @@ int main(int argc, char* argv[]) {
         fpsMap[mode].last = fps;
         fpsMap[mode].average = (fpsMap[mode].average * fpsMap[mode].count + fps) / (fpsMap[mode].count + 1);
         fpsMap[mode].count++;
+
+        std::cout << "Mode: " << mode << " FPS: " << fps << " Average: " << fpsMap[mode].average << std::endl;
     }
 }

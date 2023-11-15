@@ -11,6 +11,9 @@ uint32_t brighten(uint32_t colour, float factor) {
     red *= factor;
     green *= factor;
     blue *= factor;
+    red = std::max(0, std::min(255, (int) red));
+    green = std::max(0, std::min(255, (int) green));
+    blue = std::max(0, std::min(255, (int) blue));
     return (255 << 24) + (red << 16) + (green << 8) + blue;
 }
 
@@ -66,12 +69,14 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         glm::vec3 lightRayDirection = glm::normalize((*lights)[j].position - closestIntersection.intersectionPoint);
         glm::vec3 lightRayOrigin = closestIntersection.intersectionPoint;
         RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, lights, i, j);
-        if (shadowIntersection.triangleIndex != -1) {
-            closestIntersection.textureColour = brighten(closestIntersection.textureColour, 0.3);
-        } else 
-            closestIntersection.textureColour = brighten(closestIntersection.textureColour, 1 / std::min(2.0f, std::max(1.0f, shadowIntersection.distanceFromCamera * shadowIntersection.distanceFromCamera)));
         
-        closestIntersection.textureColour = brighten(closestIntersection.textureColour, lights->at(j).intensity);
+        //closestIntersection.textureColour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, shadowIntersection.distanceFromCamera * shadowIntersection.distanceFromCamera)));
+        if (shadowIntersection.triangleIndex != -1) {
+            float distanceToLight = glm::distance(closestIntersection.intersectionPoint, (*lights)[j].position);
+            closestIntersection.textureColour = brighten(closestIntersection.textureColour, 1 / std::max(1.0f,  2 * distanceToLight * distanceToLight));
+        }
+        else closestIntersection.textureColour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, shadowIntersection.distanceFromCamera * shadowIntersection.distanceFromCamera)));
+        closestIntersection.textureColour = brighten(closestIntersection.textureColour, (*lights)[j].intensity);
     }
 
     return closestIntersection;
