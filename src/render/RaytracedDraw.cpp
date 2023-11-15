@@ -76,18 +76,18 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         glm::vec3 reflectDirection = glm::reflect(-lightRayDirection, triangle.normal);
 
         // Light falloff
-        uint32_t colour = brighten(closestIntersection.textureColour, 1 / std::min(9.0f, std::max(1.0f, distanceToLight * distanceToLight)));
+        uint32_t colour = brighten(closestIntersection.textureColour, 1 / std::min(10.0f, std::max(1.0f, distanceToLight * distanceToLight)));
 
         // Or shadows (reassign the colour variable if the point is a shadow)
         RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, lights, i, j);
-        if (shadowIntersection.triangleIndex != -1) colour = brighten(closestIntersection.textureColour, 1 / std::max(1.0f,  2 * distanceToLight * distanceToLight));
+        if (shadowIntersection.triangleIndex != -1) colour = brighten(closestIntersection.textureColour, 1 / std::max(1.0f,  1.5f * distanceToLight * distanceToLight));
 
         // Angle of incidence lighting
         float AoIclamp = 0.2f;
         if (angleOfIncidence > 0) colour = brighten(colour, angleOfIncidence * AoIclamp + 1 - AoIclamp);
 
         // Specular lighting
-        float shininess = 256.0f;
+        float shininess = 512.0f;
         float specular = std::pow(std::max(0.0f, glm::dot(viewDirection, reflectDirection)), shininess);
         float specularClamp = 0.5f;
         colour = brighten(colour, specular * specularClamp + 1 - specularClamp);
