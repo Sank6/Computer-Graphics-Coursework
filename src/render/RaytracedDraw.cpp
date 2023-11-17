@@ -64,58 +64,63 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         int index = std::max(0, std::min(int(textureY * triangle.textureMap.height), int(triangle.textureMap.height - 1))) * triangle.textureMap.width + std::max(0, std::min(int(textureX * triangle.textureMap.width), int(triangle.textureMap.width - 1)));
         closestIntersection.textureColour = triangle.textureMap.pixels[index];
     }
+    
+    glm::vec3 interpolatedNormal = glm::normalize(triangle.vertexNormals[0] + closestIntersection.u * (triangle.vertexNormals[1] - triangle.vertexNormals[0]) + closestIntersection.v * (triangle.vertexNormals[2] - triangle.vertexNormals[0]));
 
-    float factor = 1.0f;
-
-    // Ambient lighting
-    float ambient = 3.5f;
-    factor *= ambient;
-
+    float brightness = 0.0f;
     for (size_t j = 0; j < lights->size(); j++) {
+        float factor = 1.0f;
+
         glm::vec3 lightRayDirection = glm::normalize((*lights)[j].position - closestIntersection.intersectionPoint);
         glm::vec3 lightRayOrigin = closestIntersection.intersectionPoint;
-        
+
         float distanceToLight = glm::distance(closestIntersection.intersectionPoint, (*lights)[j].position);
-        float angleOfIncidence = glm::dot(triangle.normal, -lightRayDirection);
+        float angleOfIncidence = glm::dot(interpolatedNormal, -lightRayDirection);
         
         glm::vec3 viewDirection = glm::normalize(rayOrigin - closestIntersection.intersectionPoint);
-        glm::vec3 reflectDirection = glm::reflect(-lightRayDirection, triangle.normal);
+        glm::vec3 reflectDirection = glm::reflect(-lightRayDirection, interpolatedNormal);
 
         // Light falloff
-        float falloff = 2.2f;
-        float falloffShadowFactor = 1 / std::max(1.0f, falloff * distanceToLight * distanceToLight);
+        float falloff = 1.6f;
+        float falloffShadowFactor = 1 / std::max(0.5f, falloff * distanceToLight * distanceToLight);
 
         // Or shadows (reassign the colour variable if the point is a shadow)
         float shadow = 1.5f;
         RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, lights, i, j);
-        if (shadowIntersection.triangleIndex != -1) falloffShadowFactor = 1 / std::max(1.0f, shadow * falloff * distanceToLight * distanceToLight);
+        if (shadowIntersection.triangleIndex != -1) falloffShadowFactor -= 1 / std::max(1.0f, shadow * distanceToLight * distanceToLight);
 
         factor *= falloffShadowFactor;
 
         // Diffuse lighting
-        float diffuse = std::max(0.0f, glm::dot(triangle.normal, -lightRayDirection));
+        float diffuse = std::max(0.0f, glm::dot(interpolatedNormal, -lightRayDirection));
         float diffuseClamp = 0.5f;
         factor *= diffuse * diffuseClamp + 1 - diffuseClamp;
 
         // Angle of incidence lighting
-        float AoIclamp = 0.3f;
-        if (angleOfIncidence > 0) factor *= angleOfIncidence * AoIclamp + 1 - AoIclamp;
+        float AoIclamp = 0.9f;
+        if (angleOfIncidence > 0) factor *= (1 - angleOfIncidence) * AoIclamp + 1 - AoIclamp;
 
         // Specular lighting
-        float shininess = 512.0f;
+        float shininess = 1024.0f;
         float specular = std::pow(std::max(0.0f, glm::dot(viewDirection, reflectDirection)), shininess);
-        float specularClamp = 0.5f;
+        float specularClamp = 0.2f;
         factor *= specular * specularClamp + 1 - specularClamp;
-
-        // Gouraud smoothing
-        
 
         // Light intensity and add to pixel
         factor *= (*lights)[j].intensity;
+
+        brightness += factor;
     }
 
+    brightness /= lights->size();
+
+    // Ambient lighting
+    float ambient = 0.1f;
+    brightness += ambient;
+
     // Add to pixel
-    closestIntersection.textureColour = brighten(closestIntersection.textureColour, factor);
+    closestIntersection.textureColour = brighten(closestIntersection.textureColour, brightness);
+
 
     return closestIntersection;
 }

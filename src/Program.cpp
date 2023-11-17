@@ -1,5 +1,4 @@
 #include "render/Draw.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -15,10 +14,10 @@ int main(int argc, char* argv[]) {
 
     Camera camera = Camera(window);
     Draw draw = Draw(window, camera);
-    draw.loadModel("../../../cornell-box.obj");
-    draw.loadModel("../../../sphere.obj");
+    draw.loadModel("../../../combined.obj");
 
-    draw.addLight(glm::vec3(0.0f, 0.8f, 1.8f), 5.0f);
+    draw.addLight(glm::vec3(0.0f, 0.8f, 0.0f), 2.0f);
+    //draw.addLight(glm::vec3(-0.8f, 0.2f, 0.0f), 2.0f);
 
     float rotationSpeed = 0.01f;
     float translationSpeed = 0.1f;
@@ -55,7 +54,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        if (mode == RAYTRACED) rotationSpeed = 0.1f;
+        if (mode == RAYTRACED) rotationSpeed = 0.5f;
         else rotationSpeed = 0.01f;
         
         if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, Y);

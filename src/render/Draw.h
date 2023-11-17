@@ -9,6 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <unordered_map>
+#include <random>
 
 #include "../util/util.h"
 #include "Camera.h"

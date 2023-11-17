@@ -17,8 +17,6 @@ std::array<TexturePoint, 3> getTexture(std::string textureFileName) {
 }
 
 void Draw::loadModel(std::string fileName) {
-	std::vector<ModelTriangle> triangles;
-
 	std::ifstream objFile(fileName);
 	std::string line;
 
@@ -29,9 +27,6 @@ void Draw::loadModel(std::string fileName) {
 	std::unordered_map<std::string, std::string> textureMap;
 	if (!objFile.eof()) {
 		std::string mtlFileName = line.substr(7, line.length() - 7);
-
-		std::cout << "Loading model: " << fileName << std::endl;
-		std::cout << mtlFileName << std::endl;
 
 		std::ifstream mtlFile(mtlFileName);
 		std::string currentColourString = "";
@@ -76,14 +71,15 @@ void Draw::loadModel(std::string fileName) {
 
 
 	std::vector<glm::vec3> vertices;
+	std::unordered_map<size_t, std::vector<size_t>> vertexToTriangleMap;
 	std::vector<glm::vec2> textureCoords;
-	Colour currentColour = Colour("Default", 255, 25, 25);
+	Colour currentColour = Colour("Default", 25, 25, 255);
 	if (colours.size() > 0) {
 		currentColour = colours[0];
 	}
 	std::string currentTexture = "";
 
-	float scalingFactor = 0.5f;
+	float scalingFactor = 0.35f;
 
 	for (int i = 1; i < 1000; i++) {
 		std::getline(objFile, line);
@@ -120,14 +116,19 @@ void Draw::loadModel(std::string fileName) {
 			}
 
 			t.normal = glm::normalize(glm::cross(t.vertices[1] - t.vertices[0], t.vertices[2] - t.vertices[0]));
+			t.vertexIndices[0] = std::stoi(v1) - 1;
+			t.vertexIndices[1] = std::stoi(v2) - 1;
+			t.vertexIndices[2] = std::stoi(v3) - 1;
 
 			this->scene.push_back(t);
+
+			vertexToTriangleMap[std::stoi(v1) - 1].push_back(this->scene.size() - 1);
+			vertexToTriangleMap[std::stoi(v2) - 1].push_back(this->scene.size() - 1);
+			vertexToTriangleMap[std::stoi(v3) - 1].push_back(this->scene.size() - 1);
 		}
 		else if (line.substr(0, 6) == "usemtl") {
 			std::string colour = line.substr(7, line.length() - 7);
-
 			// Check if texture
-
 			for (long unsigned int j = 0; j < colours.size(); j++) {
 				if (colours[j].name == colour) {
 					currentColour = colours[j];
@@ -148,8 +149,18 @@ void Draw::loadModel(std::string fileName) {
 
 	objFile.close();
 
-	for (long unsigned int i = 0; i < triangles.size(); i++) {
-		scene.push_back(triangles[i]);
+	// Calculate vertex normals
+	for (size_t i = 0; i < scene.size(); i++) {
+		ModelTriangle& triangle = scene[i];
+		for (size_t j = 0; j < 3; j++) {
+			std::vector<size_t> triangles = vertexToTriangleMap[triangle.vertexIndices[j]];
+			glm::vec3 vertexNormal = glm::vec3(0, 0, 0);
+			for (size_t k = 0; k < triangles.size(); k++) {
+				vertexNormal += scene[triangles[k]].normal;
+			}
+			vertexNormal /= triangles.size();
+			triangle.vertexNormals[j] = glm::normalize(vertexNormal);
+		}
 	}
 }
 
