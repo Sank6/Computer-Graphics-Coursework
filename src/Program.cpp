@@ -5,7 +5,7 @@
 #define HEIGHT 480
 
 enum Mode { WIREFRAME, RASTERISED, RAYTRACED };
-struct Fps { unsigned long average; unsigned long last;  unsigned long count; };
+struct Fps { float average; float last;  unsigned long count; };
 
 int main(int argc, char* argv[]) {
     DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
@@ -16,7 +16,9 @@ int main(int argc, char* argv[]) {
     Camera camera = Camera(window);
     Draw draw = Draw(window, camera);
     draw.loadModel("../../../cornell-box.obj");
-    draw.addLight(glm::vec3(0.0f, 0.6f, 0.5f), 1.5f);
+    draw.loadModel("../../../sphere.obj");
+
+    draw.addLight(glm::vec3(0.0f, 0.8f, 1.8f), 5.0f);
 
     float rotationSpeed = 0.01f;
     float translationSpeed = 0.1f;
@@ -73,6 +75,6 @@ int main(int argc, char* argv[]) {
         fpsMap[mode].average = (fpsMap[mode].average * fpsMap[mode].count + fps) / (fpsMap[mode].count + 1);
         fpsMap[mode].count++;
 
-        // std::cout << "Mode: " << mode << " FPS: " << fps << " Average: " << fpsMap[mode].average << std::endl;
+        std::cout << "Mode: " << mode << " FPS: " << fps << " Average: " << fpsMap[mode].average << std::endl;
     }
 }
