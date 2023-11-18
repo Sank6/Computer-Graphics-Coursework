@@ -67,6 +67,11 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
     
     glm::vec3 interpolatedNormal = glm::normalize(triangle.vertexNormals[0] + closestIntersection.u * (triangle.vertexNormals[1] - triangle.vertexNormals[0]) + closestIntersection.v * (triangle.vertexNormals[2] - triangle.vertexNormals[0]));
 
+    // Random distribution
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0f, 0.01f);
+
     float brightness = 0.0f;
     for (size_t j = 0; j < lights->size(); j++) {
         float factor = 1.0f;
@@ -82,14 +87,21 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
 
         // Light falloff
         float falloff = 1.6f;
-        float falloffShadowFactor = 1 / std::max(0.5f, falloff * distanceToLight * distanceToLight);
+        factor *= 1 / std::max(0.5f, falloff * distanceToLight * distanceToLight);
 
         // Or shadows (reassign the colour variable if the point is a shadow)
-        float shadow = 1.5f;
-        RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, lights, i, j);
-        if (shadowIntersection.triangleIndex != -1) falloffShadowFactor -= 1 / std::max(1.0f, shadow * distanceToLight * distanceToLight);
+        float shadow = 0.5f;
+        int shadowPasses = 1;
+        int shadowSum = 0;
+        for (int k = 0; k < shadowPasses; k++) {
+            glm::vec3 offsetLightRayDirection = lightRayDirection + glm::vec3(dis(gen), dis(gen), dis(gen));
+            if (k == 0) offsetLightRayDirection = lightRayDirection;
+            RayTriangleIntersection shadowIntersection = getClosestValidIntersection(offsetLightRayDirection, lightRayOrigin, scene, lights, i, j);
+            if (shadowIntersection.triangleIndex != -1) shadowSum++;
+        }
+        float averageShadow = (float) shadowSum / shadowPasses;
+        factor *= (1 - averageShadow) * shadow;
 
-        factor *= falloffShadowFactor;
 
         // Diffuse lighting
         float diffuse = std::max(0.0f, glm::dot(interpolatedNormal, -lightRayDirection));
