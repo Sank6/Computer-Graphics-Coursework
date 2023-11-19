@@ -94,8 +94,8 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         int shadowPasses = 1;
         int shadowSum = 0;
         for (int k = 0; k < shadowPasses; k++) {
-            glm::vec3 offsetLightRayDirection = lightRayDirection + glm::vec3(dis(gen), dis(gen), dis(gen));
-            if (k == 0) offsetLightRayDirection = lightRayDirection;
+            glm::vec3 offsetLightRayDirection = lightRayDirection;
+            if (k != 0) offsetLightRayDirection += glm::vec3(dis(gen), dis(gen), dis(gen));
             RayTriangleIntersection shadowIntersection = getClosestValidIntersection(offsetLightRayDirection, lightRayOrigin, scene, lights, i, j);
             if (shadowIntersection.triangleIndex != -1) shadowSum++;
         }
@@ -115,7 +115,7 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         // Specular lighting
         float shininess = 1024.0f;
         float specular = std::pow(std::max(0.0f, glm::dot(viewDirection, reflectDirection)), shininess);
-        float specularClamp = 0.2f;
+        float specularClamp = 0.3f;
         factor *= specular * specularClamp + 1 - specularClamp;
 
         // Light intensity and add to pixel
@@ -124,8 +124,6 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         brightness += factor;
     }
 
-    brightness /= lights->size();
-
     // Ambient lighting
     float ambient = 0.1f;
     brightness += ambient;
@@ -133,12 +131,11 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
     // Add to pixel
     closestIntersection.textureColour = brighten(closestIntersection.textureColour, brightness);
 
-
     return closestIntersection;
 }
 
-void Draw::drawSceneRayTraced() {
-    for (size_t x = 0; x < window.width; x++) {
+void renderRows(int startRow, int endRow, Camera& camera, DrawingWindow& window, std::vector<ModelTriangle>& scene, std::vector<Light>& lights) {
+    for (int x = startRow; x < endRow; x++) {
         for (size_t y = 0; y < window.height; y++) {
             glm::vec3 rayDirection = camera.getRayDirection(x, y, window.width, window.height);
             glm::vec3 rayOrigin = camera.getPosition();
@@ -147,4 +144,19 @@ void Draw::drawSceneRayTraced() {
                 window.setPixelColour(x, y, closestIntersection.textureColour, 1);
         }
     }
+}
+
+void Draw::drawSceneRayTraced() {
+    int numThreads = 16;
+    std::vector<std::thread> threads(numThreads);
+
+    int rowsPerThread = window.width / numThreads;
+    for (int i = 0; i < numThreads; ++i) {
+        int startRow = i * rowsPerThread;
+        int endRow = (i + 1) * rowsPerThread;
+        if (i == numThreads - 1) endRow = window.width;
+        threads[i] = std::thread(renderRows, startRow, endRow, std::ref(camera), std::ref(window), std::ref(scene), std::ref(lights));
+    }
+
+    for (auto& t : threads) t.join();
 }

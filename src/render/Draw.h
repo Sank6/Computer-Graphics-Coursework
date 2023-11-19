@@ -10,6 +10,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <random>
+#include <thread>
 
 #include "../util/util.h"
 #include "Camera.h"

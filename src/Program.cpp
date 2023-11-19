@@ -16,14 +16,13 @@ int main(int argc, char* argv[]) {
     Draw draw = Draw(window, camera);
     draw.loadModel("../../../combined.obj");
 
-    draw.addLight(glm::vec3(0.0f, 0.8f, 0.0f), 2.0f);
-    //draw.addLight(glm::vec3(-0.8f, 0.2f, 0.0f), 2.0f);
+    draw.addLight(glm::vec3(0.0f, 0.8f, 0.0f), 1.8f);
+    // draw.addLight(glm::vec3(-0.8f, 0.2f, 0.0f), 1.0f);
 
     float rotationSpeed = 0.01f;
     float translationSpeed = 0.1f;
     bool rotating = false;
     Mode mode = RAYTRACED;
-
     std::unordered_map<Mode, Fps> fpsMap;
     fpsMap[WIREFRAME] = Fps();
     fpsMap[RASTERISED] = Fps();
@@ -54,7 +53,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        if (mode == RAYTRACED) rotationSpeed = 0.5f;
+        if (mode == RAYTRACED) rotationSpeed = 0.1f;
         else rotationSpeed = 0.01f;
         
         if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, Y);
