@@ -102,7 +102,6 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm:
         float averageShadow = (float) shadowSum / shadowPasses;
         factor *= (1 - averageShadow) * shadow;
 
-
         // Diffuse lighting
         float diffuse = std::max(0.0f, glm::dot(interpolatedNormal, -lightRayDirection));
         float diffuseClamp = 0.5f;
