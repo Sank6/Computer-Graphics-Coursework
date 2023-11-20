@@ -74,13 +74,27 @@ void Scene::loadModel(std::string fileName) {
 			textureCoords.push_back(glm::vec2(std::stof(x), std::stof(y)));
 		}
 		else if (line.substr(0, 2) == "f ") {
-			std::string v1 = line.substr(2, line.find('/', 2) - 2);
-			std::string t1 = line.substr(line.find('/', 2) + 1, line.find(' ', line.find('/', 2) + 1) - line.find('/', 2) - 1);
-			std::string v2 = line.substr(line.find(' ', line.find('/', 2) + 1) + 1, line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) - line.find(' ', line.find('/', 2) + 1) - 1);
-			std::string t2 = line.substr(line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1, line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) - line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) - 1);
-			std::string v3 = line.substr(line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1, line.find('/', line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1) - line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) - 1);
-			std::string t3 = line.substr(line.find('/', line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1) + 1, line.length() - line.find('/', line.find(' ', line.find('/', line.find(' ', line.find('/', 2) + 1) + 1) + 1) + 1) - 1);
+			std::istringstream iss(line.substr(2));
+			std::string v1, v2, v3;
+			std::string t1, t2, t3;
 
+			std::getline(iss, v1, ' ');
+			std::getline(iss, v2, ' ');
+			std::getline(iss, v3, ' ');
+
+			if (v1.find('/') != std::string::npos) {
+				t1 = v1.substr(v1.find('/') + 1);
+				v1 = v1.substr(0, v1.find('/'));
+			}
+			if (v2.find('/') != std::string::npos) {
+				t2 = v2.substr(v2.find('/') + 1);
+				v2 = v2.substr(0, v2.find('/'));
+			}
+			if (v3.find('/') != std::string::npos) {
+				t3 = v3.substr(v3.find('/') + 1);
+				v3 = v3.substr(0, v3.find('/'));
+			}
+			
 			ModelTriangle t = ModelTriangle(vertices[std::stoi(v1) - 1], vertices[std::stoi(v2) - 1], vertices[std::stoi(v3) - 1], currentColour);
 			if (t1 != "" && t2 != "" && t3 != "" && textureCoords.size() > 0 && currentTexture != "") {
 				std::array<TexturePoint, 3> texturePoints;
@@ -113,6 +127,12 @@ void Scene::loadModel(std::string fileName) {
                 currentObject = Object3d(window);
             }
         }
+		else if (line.substr(0, 2) == "s ") {
+			std::string shading = line.substr(2, line.length() - 2);
+			if (shading == "off") currentObject.shading = FLAT;
+			else if (shading == "1") currentObject.shading = PHONG;
+			else if (shading == "2") currentObject.shading = GOUARD;
+		}
 		if (objFile.eof()) {
 			break;
 		}
@@ -135,8 +155,7 @@ void Scene::loadModel(std::string fileName) {
 						normal += otherTriangle.normal;
 					}
 				}
-				normal = glm::normalize(normal);
-				triangle.vertexNormals[k] = normal;
+				triangle.vertexNormals[k] = glm::normalize(normal);
 			}
 			object.triangles[j] = triangle;
 		}

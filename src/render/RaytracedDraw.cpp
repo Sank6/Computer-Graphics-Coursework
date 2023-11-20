@@ -17,25 +17,26 @@ uint32_t brighten(uint32_t colour, float factor) {
   return (255 << 24) + (red << 16) + (green << 8) + blue;
 }
 
-bool intersectsAABB(glm::vec3 &rayOrigin, glm::vec3 &rayDirection, BoundingBox &box) {
-    glm::vec3 dirFrac = glm::vec3(1.0f / rayDirection.x, 1.0f / rayDirection.y, 1.0f / rayDirection.z);
+bool intersectsAABB(glm::vec3& rayOrigin, glm::vec3& rayDirection, BoundingBox& box) {
+  glm::vec3 dirFrac = glm::vec3(1.0f / rayDirection.x, 1.0f / rayDirection.y, 1.0f / rayDirection.z);
 
-    float i1 = (box.min.x - rayOrigin.x) * dirFrac.x;
-    float i2 = (box.max.x - rayOrigin.x) * dirFrac.x;
-    float i3 = (box.min.y - rayOrigin.y) * dirFrac.y;
-    float i4 = (box.max.y - rayOrigin.y) * dirFrac.y;
-    float i5 = (box.min.z - rayOrigin.z) * dirFrac.z;
-    float i6 = (box.max.z - rayOrigin.z) * dirFrac.z;
+  float i1 = (box.min.x - rayOrigin.x) * dirFrac.x;
+  float i2 = (box.max.x - rayOrigin.x) * dirFrac.x;
+  float i3 = (box.min.y - rayOrigin.y) * dirFrac.y;
+  float i4 = (box.max.y - rayOrigin.y) * dirFrac.y;
+  float i5 = (box.min.z - rayOrigin.z) * dirFrac.z;
+  float i6 = (box.max.z - rayOrigin.z) * dirFrac.z;
 
-    float imin = std::max(std::max(std::min(i1, i2), std::min(i3, i4)), std::min(i5, i6));
-    float imax = std::min(std::min(std::max(i1, i2), std::max(i3, i4)), std::max(i5, i6));
+  float imin = std::max(std::max(std::min(i1, i2), std::min(i3, i4)), std::min(i5, i6));
+  float imax = std::min(std::min(std::max(i1, i2), std::max(i3, i4)), std::max(i5, i6));
 
-    if (imax < 0 || imin > imax) return false;
-    else return true;
+  if (imax < 0 || imin > imax)
+    return false;
+  else
+    return true;
 }
 
-
-RayTriangleIntersection getClosestValidIntersection(glm::vec3 &rayDirection, glm::vec3 &rayOrigin, Scene* scene, int bounces = 0) {
+RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm::vec3& rayOrigin, Scene* scene, int bounces = 0) {
   RayTriangleIntersection closestIntersection = RayTriangleIntersection();
   closestIntersection.distanceFromCamera = FLT_MAX;
   closestIntersection.triangleIndex = -1;
@@ -69,8 +70,12 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 &rayDirection, glm
   }
   if (closestIntersection.triangleIndex == -1 || bounces == 0) return closestIntersection;
 
-  size_t i = closestIntersection.triangleIndex;
-  ModelTriangle& triangle = scene->objects[closestIntersection.objectIndex].triangles[i];
+  size_t i = closestIntersection.objectIndex;
+  Object3d& object = scene->objects[i];
+
+  size_t j = closestIntersection.triangleIndex;
+  ModelTriangle& triangle = object.triangles[j];
+
   if (triangle.textureMap.pixels.size() == 0) {
     closestIntersection.textureColour = colourToInt(triangle.colour);
   } else {
@@ -80,37 +85,39 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3 &rayDirection, glm
     closestIntersection.textureColour = triangle.textureMap.pixels[index];
   }
 
-  glm::vec3 interpolatedNormal = glm::normalize(triangle.vertexNormals[0] + closestIntersection.u * (triangle.vertexNormals[1] - triangle.vertexNormals[0]) + closestIntersection.v * (triangle.vertexNormals[2] - triangle.vertexNormals[0]));
+  glm::vec3 normal = triangle.normal;
+  if (object.shading == PHONG) normal = glm::normalize(triangle.vertexNormals[0] + closestIntersection.u * (triangle.vertexNormals[1] - triangle.vertexNormals[0]) + closestIntersection.v * (triangle.vertexNormals[2] - triangle.vertexNormals[0]));
 
   float brightness = 0.0f;
   for (size_t j = 0; j < scene->lights.size(); j++) {
     float factor = 1.0f;
 
-    Light &light = scene->lights[j];
+    Light& light = scene->lights[j];
 
     glm::vec3 lightRayDirection = glm::normalize(light.position - closestIntersection.intersectionPoint);
     glm::vec3 lightRayOrigin = closestIntersection.intersectionPoint + lightRayDirection * 0.001f;
 
     float distanceToLight = glm::distance(closestIntersection.intersectionPoint, light.position);
-    float angleOfIncidence = glm::dot(interpolatedNormal, -lightRayDirection);
+    float angleOfIncidence = glm::dot(normal, -lightRayDirection);
 
     glm::vec3 viewDirection = glm::normalize(rayOrigin - closestIntersection.intersectionPoint);
-    glm::vec3 reflectDirection = glm::reflect(-lightRayDirection, interpolatedNormal);
+    glm::vec3 reflectDirection = glm::reflect(-lightRayDirection, normal);
 
     // Light falloff
     float falloff = 1.6f;
     factor *= 1 / std::max(0.5f, falloff * distanceToLight * distanceToLight);
 
-    // Or shadows (reassign the colour variable if the point is a shadow)
-    float shadow = 0.5f;
-    glm::vec3 offsetLightRayDirection = lightRayDirection;
-    RayTriangleIntersection shadowIntersection = getClosestValidIntersection(offsetLightRayDirection, lightRayOrigin, scene, 0);
-    if (shadowIntersection.triangleIndex != -1 && glm::distance(shadowIntersection.intersectionPoint, lightRayOrigin) < distanceToLight) {
-      factor *= shadow;
+    // Shadows
+    if (object.shading == FLAT) {
+      float shadow = 0.5f;
+      glm::vec3 offsetLightRayDirection = lightRayDirection;
+      RayTriangleIntersection shadowIntersection = getClosestValidIntersection(offsetLightRayDirection, lightRayOrigin, scene, 0);
+      if (shadowIntersection.triangleIndex != -1 && glm::distance(shadowIntersection.intersectionPoint, lightRayOrigin) < distanceToLight)
+        factor *= shadow;
     }
 
     // Diffuse lighting
-    float diffuse = std::max(0.0f, glm::dot(interpolatedNormal, -lightRayDirection));
+    float diffuse = std::max(0.0f, glm::dot(normal, -lightRayDirection));
     float diffuseClamp = 0.5f;
     factor *= diffuse * diffuseClamp + 1 - diffuseClamp;
 
@@ -165,5 +172,4 @@ void Draw::drawSceneRayTraced() {
   }
 
   for (auto& t : threads) t.join();
-
 }
