@@ -10,16 +10,16 @@ int main(int argc, char* argv[]) {
     DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
     SDL_Event event;
 
-    std::vector<CanvasTriangle> triangles;
-
     Camera camera = Camera(window);
-    Draw draw = Draw(window, camera);
-    draw.loadModel("../../../combined.obj");
 
-    draw.addLight(glm::vec3(0.0f, 0.8f, 0.0f), 1.8f);
-    // draw.addLight(glm::vec3(-0.8f, 0.2f, 0.0f), 1.0f);
+    Scene scene = Scene(window, camera);
+    scene.loadModel("../../../combined.obj");
+    Light light = Light(glm::vec3(0.0f, 0.8f, 0.0f), 1.8f, true);
+    scene.addLight(light);
+    Draw draw = Draw(window, scene);
 
-    float rotationSpeed = 0.01f;
+
+    float rotationSpeed = 0.1f;
     float translationSpeed = 0.1f;
     bool rotating = false;
     Mode mode = RAYTRACED;
@@ -46,17 +46,17 @@ int main(int argc, char* argv[]) {
                 else if (event.key.keysym.sym == SDLK_m && mode == RAYTRACED) mode = WIREFRAME;
                 else if (event.key.keysym.sym == SDLK_m && mode == WIREFRAME) mode = RASTERISED;
                 if (event.key.keysym.sym == SDLK_SPACE) rotating = !rotating;
-                if (event.key.keysym.sym == SDLK_UP) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, X);
-                if (event.key.keysym.sym == SDLK_DOWN) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, X);
-				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, Y);
-				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, Y);
+                if (event.key.keysym.sym == SDLK_UP) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, 0);
+                if (event.key.keysym.sym == SDLK_DOWN) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, 0);
+				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, 1);
+				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, 1);
             }
         }
 
-        if (mode == RAYTRACED) rotationSpeed = 0.1f;
-        else rotationSpeed = 0.01f;
+        if (mode == RAYTRACED) rotationSpeed = 0.5f;
+        else rotationSpeed = 0.1f;
         
-        if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, Y);
+        if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed * 0.5, 1);
 
         window.clearPixels();
         if (mode == WIREFRAME) draw.drawSceneWireFrame();

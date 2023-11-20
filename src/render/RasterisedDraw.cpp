@@ -127,7 +127,7 @@ void drawTexturedTriangle(DrawingWindow& window, CanvasTriangle* triangle, Colou
 	}
 }
 
-void drawTriangle3D(DrawingWindow& window, Camera& camera, ModelTriangle *triangle, bool wireframe) {	
+void drawTriangle3D(DrawingWindow& window, Camera& camera, ModelTriangle *triangle, bool wireframe) {
 	Colour colour = triangle->colour;
 
 	glm::vec3 vertex0 = triangle->vertices[0];
@@ -146,13 +146,17 @@ void drawTriangle3D(DrawingWindow& window, Camera& camera, ModelTriangle *triang
 }
 
 void Draw::drawSceneRasterised() {
-	for (long unsigned int i = 0; i < scene.size(); i++) {
-		drawTriangle3D(window, camera, &scene[i], false);
+	for (size_t i = 0; i < scene.objects.size(); i++) {
+		for (size_t j = 0; j < scene.objects.at(i).triangles.size(); j++) {
+			drawTriangle3D(window, scene.camera, &scene.objects.at(i).triangles.at(j), false);
+		}
 	}
 }
 
 void Draw::drawSceneWireFrame() {
-	for (long unsigned int i = 0; i < scene.size(); i++) {
-		drawTriangle3D(window, camera, &scene[i], true);
+	for (size_t i = 0; i < scene.objects.size(); i++) {
+		for (size_t j = 0; j < scene.objects.at(i).triangles.size(); j++) {
+			drawTriangle3D(window, scene.camera, &scene.objects.at(i).triangles.at(j), true);
+		}
 	}
 }

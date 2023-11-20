@@ -13,7 +13,6 @@ struct ModelTriangle {
 	Colour colour{};
 	glm::vec3 normal{};
 	TextureMap textureMap;
-
 	
 	std::array<size_t, 3> vertexIndices{};
 	std::array<glm::vec3, 3> vertexNormals{};

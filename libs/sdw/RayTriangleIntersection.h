@@ -9,6 +9,7 @@ struct RayTriangleIntersection {
 	float distanceFromCamera;
 	ModelTriangle intersectedTriangle;
 	long triangleIndex;
+	long objectIndex;
 	uint32_t textureColour;
 
 	// Barycentric coordinates

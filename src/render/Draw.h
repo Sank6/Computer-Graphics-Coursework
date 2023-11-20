@@ -13,29 +13,15 @@
 #include <thread>
 
 #include "../util/util.h"
-#include "Camera.h"
-
-class Light {
-public:
-	glm::vec3 position;
-	float intensity;
-	bool state;
-	
-	Light();
-	Light(glm::vec3 position, float intensity, bool state);
-};
+#include "../scene/Camera.h"
+#include "../scene/Scene.h"
 
 class Draw {
 private:
 	DrawingWindow &window;
-	Camera &camera;
-	std::vector<ModelTriangle> scene;
-	std::vector<Light> lights;
+	Scene &scene;
 public:
-	Draw(DrawingWindow &window, Camera &camera);
-	void loadModel(std::string);
-	void addLight(glm::vec3, float);
-	void clearScene();
+	Draw(DrawingWindow &window, Scene &scene);
 	void drawSceneRasterised();
 	void drawSceneWireFrame();
 	void drawSceneRayTraced();

@@ -15,3 +15,9 @@ std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3 from, glm::vec3 t
   for (float i = 0; i < numberOfValues; i++) values.push_back(from + (step * i));
   return values;
 }
+
+std::array<TexturePoint, 3> getTexture(std::string textureFileName) {
+	std::array<TexturePoint, 3> texturePoints;
+	TextureMap textureMap = TextureMap(textureFileName);
+	return texturePoints;
+}

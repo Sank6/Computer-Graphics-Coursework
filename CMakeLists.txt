@@ -38,10 +38,15 @@ add_executable(
         libs/sdw/TexturePoint.cpp
         libs/sdw/Utils.cpp
         src/util/util.cpp
-        src/render/Camera.cpp
-        src/render/RasterisedDraw.cpp
+        src/render/Draw.cpp
         src/render/RaytracedDraw.cpp
-        src/render/Scene.cpp
+        src/render/RasterisedDraw.cpp
+        src/scene/Camera.cpp
+        src/scene/Scene.cpp
+        src/scene/Object.cpp
+        src/scene/Object3d.cpp
+        src/scene/Camera.cpp
+        src/scene/Light.cpp
         src/Program.cpp
 )
 
