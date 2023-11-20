@@ -52,9 +52,6 @@ int main(int argc, char* argv[]) {
 				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, 1);
             }
         }
-
-        if (mode == RAYTRACED) rotationSpeed = 0.5f;
-        else rotationSpeed = 0.1f;
         
         if (rotating) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed * 0.5, 1);
 

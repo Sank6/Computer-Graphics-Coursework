@@ -17,13 +17,32 @@ uint32_t brighten(uint32_t colour, float factor) {
   return (255 << 24) + (red << 16) + (green << 8) + blue;
 }
 
-RayTriangleIntersection getClosestValidIntersection(glm::vec3 rayDirection, glm::vec3 rayOrigin, Scene* scene, int bounces = 0) {
+bool intersectsAABB(glm::vec3 &rayOrigin, glm::vec3 &rayDirection, BoundingBox &box) {
+    glm::vec3 dirFrac = glm::vec3(1.0f / rayDirection.x, 1.0f / rayDirection.y, 1.0f / rayDirection.z);
+
+    float i1 = (box.min.x - rayOrigin.x) * dirFrac.x;
+    float i2 = (box.max.x - rayOrigin.x) * dirFrac.x;
+    float i3 = (box.min.y - rayOrigin.y) * dirFrac.y;
+    float i4 = (box.max.y - rayOrigin.y) * dirFrac.y;
+    float i5 = (box.min.z - rayOrigin.z) * dirFrac.z;
+    float i6 = (box.max.z - rayOrigin.z) * dirFrac.z;
+
+    float imin = std::max(std::max(std::min(i1, i2), std::min(i3, i4)), std::min(i5, i6));
+    float imax = std::min(std::min(std::max(i1, i2), std::max(i3, i4)), std::max(i5, i6));
+
+    if (imax < 0 || imin > imax) return false;
+    else return true;
+}
+
+
+RayTriangleIntersection getClosestValidIntersection(glm::vec3 &rayDirection, glm::vec3 &rayOrigin, Scene* scene, int bounces = 0) {
   RayTriangleIntersection closestIntersection = RayTriangleIntersection();
   closestIntersection.distanceFromCamera = FLT_MAX;
   closestIntersection.triangleIndex = -1;
 
   for (size_t j = 0; j < scene->objects.size(); j++) {
     Object3d& object = scene->objects[j];
+    if (!intersectsAABB(rayOrigin, rayDirection, object.boundingBox)) continue;
     for (size_t i = 0; i < object.triangles.size(); i++) {
       ModelTriangle& triangle = object.triangles[i];
       glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];

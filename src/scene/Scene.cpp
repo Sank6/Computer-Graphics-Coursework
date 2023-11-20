@@ -140,6 +140,7 @@ void Scene::loadModel(std::string fileName) {
 			}
 			object.triangles[j] = triangle;
 		}
+		object.updateBoundingBox();
 	}
 }
 
