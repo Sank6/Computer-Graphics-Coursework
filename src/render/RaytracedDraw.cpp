@@ -23,14 +23,14 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
     if (shadowIntersection.triangleIndex != -1 && glm::distance(shadowIntersection.intersectionPoint, lightRayOrigin) < distanceToLight)
       brightness -= shadow;
   }
-  
+
   /* Specular lighting */
   if (scene->specularPass) {
     float shininess = 128.0f;
     float strength = 0.1f;
     if (object.shading == PHONG) {
       strength = 3.0f;
-      //shininess = 8.0f;
+      // shininess = 8.0f;
     }
     float specular = std::pow(std::max(0.0f, glm::dot(viewDirection, reflectDirection)), shininess);
     brightness += specular * light.intensity * strength;
@@ -41,15 +41,14 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   // Light falloff
   if (scene->falloffPass) {
     float falloff = 2.6f;
-    brightness += 1 / std::max(0.01f, falloff * distanceToLight * distanceToLight);
+    brightness += light.intensity / std::max(0.01f, falloff * distanceToLight * distanceToLight);
   }
 
   // Angle of incidence lighting
   if (scene->aoiPass) {
-    float AoImultiplier = 0.2f;
+    float AoImultiplier = 0.1f;
     brightness -= angleOfIncidence * AoImultiplier;
   }
-
 
   return std::min(2.0f, std::max(0.0f, brightness));
 }
@@ -112,6 +111,22 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
     brightness += addLight(light, closestIntersection, scene, rayOrigin, normal);
   }
 
+  /* Reflections */
+  if (scene->reflectionPass && bounces > 1) {
+    float reflectiveness = 0.2f;
+    if (object.shading == PHONG) reflectiveness = 0.7f;
+    glm::vec3 incidentDirection = glm::normalize(rayOrigin - closestIntersection.intersectionPoint);
+    glm::vec3 reflectDirection = glm::normalize(glm::reflect(-incidentDirection, normal));
+    glm::vec3 offsetOrigin = closestIntersection.intersectionPoint + reflectDirection * 0.001f;
+    RayTriangleIntersection reflectIntersection = getClosestValidIntersection(reflectDirection, offsetOrigin, scene, bounces - 1);
+    if (reflectIntersection.triangleIndex != -1)
+      closestIntersection.textureColour = combine(closestIntersection.textureColour, reflectIntersection.textureColour, 1 - reflectiveness);
+    else {
+      uint32_t backgroundColour = colourToInt(scene->backgroundColour);
+      closestIntersection.textureColour = combine(closestIntersection.textureColour, backgroundColour, 1 - reflectiveness);
+    }
+  }
+
   // Ambient lighting
   if (scene->ambientPass) {
     float ambient = 0.1f;
@@ -125,13 +140,16 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
 }
 
 void renderRows(int startRow, int endRow, DrawingWindow& window, Scene& scene) {
+  uint32_t backgroundColour = colourToInt(scene.backgroundColour);
   for (int x = startRow; x < endRow; x++) {
     for (size_t y = 0; y < window.height; y++) {
       glm::vec3 rayDirection = scene.camera.getRayDirection(x, y, window.width, window.height);
       glm::vec3 rayOrigin = scene.camera.getPosition();
-      RayTriangleIntersection closestIntersection = getClosestValidIntersection(rayDirection, rayOrigin, &scene, 1);
+      RayTriangleIntersection closestIntersection = getClosestValidIntersection(rayDirection, rayOrigin, &scene, 10);
       if (closestIntersection.triangleIndex != -1)
         window.setPixelColour(x, y, closestIntersection.textureColour, 1);
+      else
+        window.setPixelColour(x, y, backgroundColour, 1);
     }
   }
 }

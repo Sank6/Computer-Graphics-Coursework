@@ -8,6 +8,9 @@ Scene::Scene(DrawingWindow &window, Camera &camera) : window(window), objects(st
 	this->falloffPass = true;
 	this->aoiPass = true;
 	this->ambientPass = true;
+	this->reflectionPass = true;
+
+	this->backgroundColour = Colour("Default", 0, 0, 0);
 }
 
 void Scene::loadModel(std::string fileName, float scalingFactor) {

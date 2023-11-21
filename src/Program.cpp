@@ -11,14 +11,15 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     Camera camera = Camera(window);
-	camera.translate(glm::vec3(0.0f, 0.0f, 4.0f));
+	camera.translate(glm::vec3(0.8f, 0.8f, 0.8f));
 
     Scene scene = Scene(window, camera);
-    scene.loadModel("../../../bunny.obj", 0.8f);
-    Light light = Light(glm::vec3(0.0f, 0.8f, 1.0f), 1.0f, true);
+    scene.loadModel("../../../combined.obj", 0.35f);
+    Light light = Light(glm::vec3(0.0f, 0.8f, 0.0f), 0.8f, true);
     scene.addLight(light);
+    Light light2 = Light(glm::vec3(0.0f, 0.8f, 1.0f), 0.1f, true);
+    scene.addLight(light2);
     Draw draw = Draw(window, scene);
-
 
     float rotationSpeed = 0.1f;
     float translationSpeed = 0.1f;
@@ -57,6 +58,7 @@ int main(int argc, char* argv[]) {
                 if (event.key.keysym.sym == SDLK_c) scene.falloffPass = !scene.falloffPass;
                 if (event.key.keysym.sym == SDLK_v) scene.aoiPass = !scene.aoiPass;
                 if (event.key.keysym.sym == SDLK_b) scene.ambientPass = !scene.ambientPass;
+                if (event.key.keysym.sym == SDLK_n) scene.reflectionPass = !scene.reflectionPass;
             }
         }
         

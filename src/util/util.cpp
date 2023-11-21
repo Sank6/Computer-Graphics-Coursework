@@ -57,3 +57,12 @@ bool intersectsAABB(glm::vec3& rayOrigin, glm::vec3& rayDirection, BoundingBox& 
   else
     return true;
 }
+
+
+uint32_t combine(uint32_t colour1, uint32_t colour2, float percentOfColour1) {
+  float percentOfColour2 = 1.0f - percentOfColour1;
+  uint32_t red = ((colour1 >> 16) & 255) * percentOfColour1 + ((colour2 >> 16) & 255) * percentOfColour2;
+  uint32_t green = ((colour1 >> 8) & 255) * percentOfColour1 + ((colour2 >> 8) & 255) * percentOfColour2;
+  uint32_t blue = (colour1 & 255) * percentOfColour1 + (colour2 & 255) * percentOfColour2;
+  return (255 << 24) + (red << 16) + (green << 8) + blue;
+}

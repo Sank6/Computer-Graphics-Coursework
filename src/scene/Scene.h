@@ -22,6 +22,9 @@ public:
 	bool falloffPass;
 	bool aoiPass;
 	bool ambientPass;
+	bool reflectionPass;
+
+	Colour backgroundColour;
 
 	Scene(DrawingWindow &window, Camera &camera);
 	void loadModel(std::string, float scalingFactor = 0.35f);
