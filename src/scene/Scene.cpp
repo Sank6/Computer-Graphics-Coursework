@@ -1,8 +1,16 @@
 #include "Scene.h"
 
-Scene::Scene(DrawingWindow &window, Camera &camera) : window(window), objects(std::vector<Object3d>()), lights(std::vector<Light>()), camera(camera) {}
+#define MAX_LINES 10000
 
-void Scene::loadModel(std::string fileName) {
+Scene::Scene(DrawingWindow &window, Camera &camera) : window(window), objects(std::vector<Object3d>()), lights(std::vector<Light>()), camera(camera) {
+	this->shadowPass = true;
+	this->specularPass = true;
+	this->falloffPass = true;
+	this->aoiPass = true;
+	this->ambientPass = true;
+}
+
+void Scene::loadModel(std::string fileName, float scalingFactor) {
 	std::ifstream objFile(fileName);
 	std::string line;
 
@@ -16,7 +24,7 @@ void Scene::loadModel(std::string fileName) {
 
 		std::ifstream mtlFile(mtlFileName);
 		std::string currentColourString = "";
-		for (int i = 0; i < 5000; i++) {
+		for (int i = 0; i < MAX_LINES; i++) {
 			std::getline(mtlFile, line);
 			if (line.substr(0, 6) == "newmtl") {
 				currentColourString = line.substr(7, line.length() - 7);
@@ -58,9 +66,7 @@ void Scene::loadModel(std::string fileName) {
 	std::string currentTexture = "";
     Object3d currentObject = Object3d(window);
 
-	float scalingFactor = 0.35f;
-
-	for (int i = 1; i < 5000; i++) {
+	for (int i = 1; i < MAX_LINES; i++) {
 		std::getline(objFile, line);
 		if (line.substr(0, 2) == "v ") {
 			std::string x = line.substr(2, line.find(' ', 2) - 2);

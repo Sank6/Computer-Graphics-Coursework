@@ -19,8 +19,10 @@ void drawLine(DrawingWindow& window, CanvasPoint from, CanvasPoint to, Colour co
 	std::vector<CanvasPoint> linePoints = pointsOnLine(from, to);
 
 	for (CanvasPoint point : linePoints) {
-		if (point.x < 0 || point.x >= window.width || point.y < 0 || point.y >= window.height) continue;
-		window.setPixelColour(point.x, point.y, colourInt, point.depth);
+		size_t x = std::max(0.0f, floor(point.x));
+		size_t y = std::max(0.0f, floor(point.y));
+		if (x >= window.width || y >= window.height) continue;
+		window.setPixelColour(x, y, colourInt, point.depth);
 	}
 }
 

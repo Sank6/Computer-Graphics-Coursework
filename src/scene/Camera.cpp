@@ -1,9 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(DrawingWindow &window): GenericObject(window) {
-	focalLength = 2.0f;
-	this->translate(glm::vec3(0.0f, 0.0f, 4.0f));
-	
+	focalLength = 2.0f;	
 }
 
 glm::vec3 Camera::getRayDirection(int u, int v, int screenWidth, int screenHeight) {

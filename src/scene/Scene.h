@@ -16,8 +16,15 @@ public:
     std::vector<Light> lights;
 	Camera &camera;
 
+	// Render Passes
+	bool shadowPass;
+	bool specularPass;
+	bool falloffPass;
+	bool aoiPass;
+	bool ambientPass;
+
 	Scene(DrawingWindow &window, Camera &camera);
-	void loadModel(std::string);
+	void loadModel(std::string, float scalingFactor = 0.35f);
 	void addLight(Light light);
     void addObject(Object3d object);
 	void clearScene();

@@ -11,10 +11,11 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     Camera camera = Camera(window);
+	camera.translate(glm::vec3(0.0f, 0.0f, 4.0f));
 
     Scene scene = Scene(window, camera);
-    scene.loadModel("../../../combined.obj");
-    Light light = Light(glm::vec3(0.0f, 0.8f, 0.0f), 1.8f, true);
+    scene.loadModel("../../../bunny.obj", 0.8f);
+    Light light = Light(glm::vec3(0.0f, 0.8f, 1.0f), 1.0f, true);
     scene.addLight(light);
     Draw draw = Draw(window, scene);
 
@@ -50,6 +51,12 @@ int main(int argc, char* argv[]) {
                 if (event.key.keysym.sym == SDLK_DOWN) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, 0);
 				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, 1);
 				if (event.key.keysym.sym == SDLK_RIGHT) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, 1);
+
+                if (event.key.keysym.sym == SDLK_z) scene.shadowPass = !scene.shadowPass;
+                if (event.key.keysym.sym == SDLK_x) scene.specularPass = !scene.specularPass;
+                if (event.key.keysym.sym == SDLK_c) scene.falloffPass = !scene.falloffPass;
+                if (event.key.keysym.sym == SDLK_v) scene.aoiPass = !scene.aoiPass;
+                if (event.key.keysym.sym == SDLK_b) scene.ambientPass = !scene.ambientPass;
             }
         }
         

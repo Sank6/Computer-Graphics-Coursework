@@ -21,3 +21,39 @@ std::array<TexturePoint, 3> getTexture(std::string textureFileName) {
 	TextureMap textureMap = TextureMap(textureFileName);
 	return texturePoints;
 }
+
+uint32_t colourToInt(Colour colour) {
+  return (255 << 24) + (int(colour.red) << 16) + (int(colour.green) << 8) + int(colour.blue);
+}
+
+uint32_t brighten(uint32_t colour, float factor) {
+  uint32_t red = (colour >> 16) & 255;
+  uint32_t green = (colour >> 8) & 255;
+  uint32_t blue = colour & 255;
+  red *= factor;
+  green *= factor;
+  blue *= factor;
+  red = std::max(0, std::min(255, (int)red));
+  green = std::max(0, std::min(255, (int)green));
+  blue = std::max(0, std::min(255, (int)blue));
+  return (255 << 24) + (red << 16) + (green << 8) + blue;
+}
+
+bool intersectsAABB(glm::vec3& rayOrigin, glm::vec3& rayDirection, BoundingBox& box) {
+  glm::vec3 dirFrac = glm::vec3(1.0f / rayDirection.x, 1.0f / rayDirection.y, 1.0f / rayDirection.z);
+
+  float i1 = (box.min.x - rayOrigin.x) * dirFrac.x;
+  float i2 = (box.max.x - rayOrigin.x) * dirFrac.x;
+  float i3 = (box.min.y - rayOrigin.y) * dirFrac.y;
+  float i4 = (box.max.y - rayOrigin.y) * dirFrac.y;
+  float i5 = (box.min.z - rayOrigin.z) * dirFrac.z;
+  float i6 = (box.max.z - rayOrigin.z) * dirFrac.z;
+
+  float imin = std::max(std::max(std::min(i1, i2), std::min(i3, i4)), std::min(i5, i6));
+  float imax = std::min(std::min(std::max(i1, i2), std::max(i3, i4)), std::max(i5, i6));
+
+  if (imax < 0 || imin > imax)
+    return false;
+  else
+    return true;
+}
