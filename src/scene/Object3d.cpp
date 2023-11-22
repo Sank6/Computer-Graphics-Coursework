@@ -1,9 +1,17 @@
 #include "Object3d.h"
 
-Object3d::Object3d(DrawingWindow &window) : GenericObject(window) {
+Object3d::Object3d() : GenericObject() {};
+
+Object3d::Object3d(std::string name, DrawingWindow &window) : GenericObject(window) {
+    this->name = name;
     this->shading = FLAT;
     this->textureMapping = false;
     this->triangles = std::vector<ModelTriangle>();
+
+    this->reflectiveness = 0.2f;
+    this->specularStrength = 0.1f;
+    this->refractiveIndex = 1.0f;
+    this->transparency = 0.0f;
 }
 
 void Object3d::addTriangle(ModelTriangle triangle) {
@@ -25,4 +33,10 @@ void Object3d::updateBoundingBox() {
             if (vertex.z > this->boundingBox.max.z) this->boundingBox.max.z = vertex.z;
         }
     }
+}
+
+void Object3d::metal() {
+    this->shading = PHONG;
+    this->reflectiveness = 0.7f;
+    this->specularStrength = 3.0f;
 }

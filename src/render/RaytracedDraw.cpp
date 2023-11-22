@@ -27,13 +27,8 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   /* Specular lighting */
   if (scene->specularPass) {
     float shininess = 128.0f;
-    float strength = 0.1f;
-    if (object.shading == PHONG) {
-      strength = 3.0f;
-      // shininess = 8.0f;
-    }
     float specular = std::pow(std::max(0.0f, glm::dot(viewDirection, reflectDirection)), shininess);
-    brightness += specular * light.intensity * strength;
+    brightness += specular * light.intensity * object.specularStrength;
   }
 
   /* Diffuse lighting */
@@ -61,6 +56,7 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
   for (size_t j = 0; j < scene->objects.size(); j++) {
     Object3d& object = scene->objects[j];
     if (!intersectsAABB(rayOrigin, rayDirection, object.boundingBox)) continue;
+    if (bounces == 0 && object.transparency > 0) continue;
     for (size_t i = 0; i < object.triangles.size(); i++) {
       ModelTriangle& triangle = object.triangles[i];
       glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
@@ -74,6 +70,8 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
       float v = possibleSolution.z;  // Distance along e1
 
       if (std::isnan(t) || std::isnan(u) || std::isnan(v)) continue;
+
+      //if (bounces >= 9 && scene->objects[j].transparency > 0) continue; 
 
       if (u >= 0 && v >= 0 && u + v <= 1 && t > 0 && t < closestIntersection.distanceFromCamera) {
         closestIntersection.distanceFromCamera = t;
@@ -113,17 +111,15 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
 
   /* Reflections */
   if (scene->reflectionPass && bounces > 1) {
-    float reflectiveness = 0.2f;
-    if (object.shading == PHONG) reflectiveness = 0.7f;
     glm::vec3 incidentDirection = glm::normalize(rayOrigin - closestIntersection.intersectionPoint);
     glm::vec3 reflectDirection = glm::normalize(glm::reflect(-incidentDirection, normal));
     glm::vec3 offsetOrigin = closestIntersection.intersectionPoint + reflectDirection * 0.001f;
     RayTriangleIntersection reflectIntersection = getClosestValidIntersection(reflectDirection, offsetOrigin, scene, bounces - 1);
     if (reflectIntersection.triangleIndex != -1)
-      closestIntersection.textureColour = combine(closestIntersection.textureColour, reflectIntersection.textureColour, 1 - reflectiveness);
+      closestIntersection.textureColour = combine(closestIntersection.textureColour, reflectIntersection.textureColour, 1 - object.reflectiveness);
     else {
       uint32_t backgroundColour = colourToInt(scene->backgroundColour);
-      closestIntersection.textureColour = combine(closestIntersection.textureColour, backgroundColour, 1 - reflectiveness);
+      closestIntersection.textureColour = combine(closestIntersection.textureColour, backgroundColour, 1 - object.reflectiveness);
     }
   }
 
@@ -135,6 +131,13 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
 
   // Add to pixel
   closestIntersection.textureColour = brighten(closestIntersection.textureColour, brightness);
+  
+  if (scene->refractionPass && bounces > 1) {
+    glm::vec3 incidentDirection = glm::normalize(closestIntersection.intersectionPoint - rayOrigin);
+    glm::vec3 offsetOrigin = closestIntersection.intersectionPoint + incidentDirection * 0.001f;
+    RayTriangleIntersection refractIntersection = getClosestValidIntersection(incidentDirection, offsetOrigin, scene, bounces - 1);
+    closestIntersection.textureColour = combine(closestIntersection.textureColour, refractIntersection.textureColour, 1 - object.transparency);
+  }
 
   return closestIntersection;
 }

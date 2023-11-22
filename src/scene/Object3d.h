@@ -16,11 +16,20 @@ class Object3d : public GenericObject {
 public:
     BoundingBox boundingBox;
     std::vector<ModelTriangle> triangles;
+
     Shading shading;
+    float reflectiveness;
+    float specularStrength;
+    float refractiveIndex;
+    float transparency;
+
+
     bool textureMapping;
 
-    Object3d(DrawingWindow &window);
+    Object3d();
+    Object3d(std::string name, DrawingWindow &window);
 
+    void metal();
     void addTriangle(ModelTriangle);
     void updateBoundingBox();
 };

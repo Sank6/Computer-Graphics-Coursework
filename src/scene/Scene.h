@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Object3d.h"
 #include "Camera.h"
 #include "Light.h"
@@ -23,6 +25,7 @@ public:
 	bool aoiPass;
 	bool ambientPass;
 	bool reflectionPass;
+	bool refractionPass;
 
 	Colour backgroundColour;
 

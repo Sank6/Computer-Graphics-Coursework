@@ -1,6 +1,4 @@
-#ifndef CAMERA_H
-#define CAMERA_H
-
+#pragma once
 #include "Object.h"
 
 class Camera : public GenericObject {
@@ -10,5 +8,3 @@ public:
 	glm::vec3 getRayDirection(int, int, int, int);
 	CanvasPoint getCanvasIntersectionPoint(glm::vec3);
 };
-
-#endif // CAMERA_H

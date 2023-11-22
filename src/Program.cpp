@@ -11,7 +11,9 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     Camera camera = Camera(window);
-	camera.translate(glm::vec3(0.8f, 0.8f, 0.8f));
+	camera.translate(glm::vec3(0.0f, 0.0f, 4.0f));
+    camera.setStartPosition();
+    
 
     Scene scene = Scene(window, camera);
     scene.loadModel("../../../combined.obj", 0.35f);
@@ -44,10 +46,13 @@ int main(int argc, char* argv[]) {
                 if (event.key.keysym.sym == SDLK_q) camera.translate(glm::vec3(0, 0, -translationSpeed));
                 if (event.key.keysym.sym == SDLK_e) camera.translate(glm::vec3(0, 0, translationSpeed));
                 if (event.key.keysym.sym == SDLK_r) camera.reset();
+
                 if (event.key.keysym.sym == SDLK_m && mode == RASTERISED) mode = RAYTRACED;
                 else if (event.key.keysym.sym == SDLK_m && mode == RAYTRACED) mode = WIREFRAME;
                 else if (event.key.keysym.sym == SDLK_m && mode == WIREFRAME) mode = RASTERISED;
+
                 if (event.key.keysym.sym == SDLK_SPACE) rotating = !rotating;
+
                 if (event.key.keysym.sym == SDLK_UP) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, 0);
                 if (event.key.keysym.sym == SDLK_DOWN) camera.rotateAroundPoint(glm::vec3(0.0f), rotationSpeed, 0);
 				if (event.key.keysym.sym == SDLK_LEFT) camera.rotateAroundPoint(glm::vec3(0.0f), -rotationSpeed, 1);
@@ -59,6 +64,7 @@ int main(int argc, char* argv[]) {
                 if (event.key.keysym.sym == SDLK_v) scene.aoiPass = !scene.aoiPass;
                 if (event.key.keysym.sym == SDLK_b) scene.ambientPass = !scene.ambientPass;
                 if (event.key.keysym.sym == SDLK_n) scene.reflectionPass = !scene.reflectionPass;
+                if (event.key.keysym.sym == SDLK_COMMA) scene.refractionPass = !scene.refractionPass;
             }
         }
         

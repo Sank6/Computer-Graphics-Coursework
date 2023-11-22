@@ -1,3 +1,5 @@
+#pragma once
+
 #include <DrawingWindow.h>
 #include <Colour.h>
 #include <CanvasPoint.h>

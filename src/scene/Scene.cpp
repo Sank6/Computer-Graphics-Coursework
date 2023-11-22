@@ -9,6 +9,7 @@ Scene::Scene(DrawingWindow &window, Camera &camera) : window(window), objects(st
 	this->aoiPass = true;
 	this->ambientPass = true;
 	this->reflectionPass = true;
+	this->refractionPass = true;
 
 	this->backgroundColour = Colour("Default", 0, 0, 0);
 }
@@ -67,7 +68,7 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 	Colour currentColour = Colour("Default", 25, 25, 255);
 	if (colours.size() > 0) currentColour = colours[0];
 	std::string currentTexture = "";
-    Object3d currentObject = Object3d(window);
+    Object3d currentObject;
 
 	for (int i = 1; i < MAX_LINES; i++) {
 		std::getline(objFile, line);
@@ -133,13 +134,15 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
         else if (line.substr(0, 2) == "o ") {
             if (currentObject.triangles.size() > 0) {
                 this->addObject(currentObject);
-                currentObject = Object3d(window);
+				std::string name = line.substr(2, line.length() - 2);
+                currentObject = Object3d(name, window);
+				if (name == "tall_box") currentObject.transparency = 0.7f;
             }
         }
 		else if (line.substr(0, 2) == "s ") {
 			std::string shading = line.substr(2, line.length() - 2);
 			if (shading == "off") currentObject.shading = FLAT;
-			else if (shading == "1") currentObject.shading = PHONG;
+			else if (shading == "1") currentObject.metal();
 			else if (shading == "2") currentObject.shading = GOUARD;
 		}
 		if (objFile.eof()) {
