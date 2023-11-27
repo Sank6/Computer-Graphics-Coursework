@@ -34,9 +34,3 @@ void Object3d::updateBoundingBox() {
         }
     }
 }
-
-void Object3d::metal() {
-    this->shading = PHONG;
-    this->reflectiveness = 0.7f;
-    this->specularStrength = 3.0f;
-}

@@ -11,6 +11,7 @@ struct RayTriangleIntersection {
 	long triangleIndex;
 	long objectIndex;
 	uint32_t textureColour;
+	float refractiveIndex;
 
 	// Barycentric coordinates
 	float u;
