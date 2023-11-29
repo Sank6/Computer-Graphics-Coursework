@@ -5,7 +5,7 @@
 
 #include <vector>
 
-enum Shading { FLAT, PHONG, GOUARD };
+enum Shading { FLAT, PHONG, GOURAD };
 
 struct BoundingBox {
     glm::vec3 min;
@@ -23,13 +23,11 @@ public:
     float refractiveIndex;
     float transparency;
 
-
     bool textureMapping;
 
     Object3d();
     Object3d(std::string name, DrawingWindow &window);
 
-    void metal();
     void addTriangle(ModelTriangle);
     void updateBoundingBox();
 };

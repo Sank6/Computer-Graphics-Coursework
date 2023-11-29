@@ -136,26 +136,27 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
                 this->addObject(currentObject);
 				std::string name = line.substr(2, line.length() - 2);
                 currentObject = Object3d(name, window);
-				if (name == "tall_box") {
-					currentObject.reflectiveness = 0.35f;
-					currentObject.specularStrength = 3.0f;
-				}
-				if (name == "sphere") {
-    				// currentObject.shading = PHONG;
-					currentObject.transparency = 0.7f;
-					currentObject.refractiveIndex = 2.0f;
-				}
             }
         }
 		else if (line.substr(0, 2) == "s ") {
 			std::string shading = line.substr(2, line.length() - 2);
 			if (shading == "off") currentObject.shading = FLAT;
 			else if (shading == "1") currentObject.shading = PHONG;
-			else if (shading == "2") currentObject.shading = GOUARD;
+			else if (shading == "2") currentObject.shading = GOURAD;
 		}
 		if (objFile.eof()) {
 			break;
 		}
+	}
+
+	if (currentObject.name == "sphere") {
+		currentObject.shading = PHONG;
+		currentObject.transparency = 0.7f;
+		currentObject.refractiveIndex = 1.8f;
+	}
+	if (currentObject.name == "tall_box") {
+		currentObject.reflectiveness = 0.35f;
+		currentObject.specularStrength = 3.0f;
 	}
 	this->addObject(currentObject);
 

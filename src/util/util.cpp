@@ -26,6 +26,19 @@ uint32_t colourToInt(Colour colour) {
   return (255 << 24) + (int(colour.red) << 16) + (int(colour.green) << 8) + int(colour.blue);
 }
 
+Colour intToColour(uint32_t colour) {
+  return Colour("Colour", (colour >> 16) & 255, (colour >> 8) & 255, colour & 255);
+}
+
+
+Colour gouradShading(Colour a, Colour b, Colour c, float u, float v) {
+  float w = 1.0f - u - v;
+  float red = a.red * w + b.red * u + c.red * v;
+  float green = a.green * w + b.green * u + c.green * v;
+  float blue = a.blue * w + b.blue * u + c.blue * v;
+  return Colour("Colour", red, green, blue);
+}
+
 uint32_t brighten(uint32_t colour, float factor) {
   uint32_t red = (colour >> 16) & 255;
   uint32_t green = (colour >> 8) & 255;

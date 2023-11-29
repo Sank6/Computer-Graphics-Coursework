@@ -1,7 +1,7 @@
 #include "render/Draw.h"
 
-#define WIDTH 1920
-#define HEIGHT 1080
+#define WIDTH 1280
+#define HEIGHT 720
 
 enum Mode { WIREFRAME, RASTERISED, RAYTRACED };
 struct Fps { float average; float last;  unsigned long count; };
@@ -16,10 +16,8 @@ int main(int argc, char* argv[]) {
     
     Scene scene = Scene(window, camera);
     scene.loadModel("../../../combined.obj", 0.35f);
-    Light light = Light(glm::vec3(0.0f, 0.8f, 0.0f), 0.8f, true);
-    scene.addLight(light);
-    // Light light2 = Light(glm::vec3(0.0f, 0.8f, 1.0f), 0.1f, true);
-    // scene.addLight(light2);
+    Light light2 = Light(glm::vec3(0.0f, 0.8f, 1.0f), 0.6f, true);
+    scene.addLight(light2);
     Draw draw = Draw(window, scene);
 
     float rotationSpeed = 0.1f;
