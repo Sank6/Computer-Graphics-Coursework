@@ -65,3 +65,9 @@ void GenericObject::rotateAroundPoint(glm::vec3 point, float angle, int axis) {
 void GenericObject::setStartPosition() {
   this->startPosition = this->transformation;
 }
+
+glm::vec3 GenericObject::transformPoint(glm::vec3 point) {
+  glm::vec4 point4 = glm::vec4(point.x, point.y, point.z, 1.0f);
+  glm::vec4 transformedPoint = this->transformation * point4;
+  return glm::vec3(transformedPoint.x, transformedPoint.y, transformedPoint.z);
+}

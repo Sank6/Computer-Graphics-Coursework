@@ -151,7 +151,7 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 
 	if (currentObject.name == "sphere") {
 		currentObject.transparency = 0.7f;
-		currentObject.refractiveIndex = 1.8f;
+		currentObject.refractiveIndex = 5.0f;
 	}
 	if (currentObject.name == "tall_box") {
 		currentObject.reflectiveness = 0.35f;
@@ -166,24 +166,8 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 	objFile.close();
 
 	// Calculating vertex normals
-	for (size_t i = 0; i < objects.size(); i++) {
-		Object3d &object = objects[i];
-		for (size_t j = 0; j < object.triangles.size(); j++) {
-			ModelTriangle triangle = object.triangles[j];
-			for (size_t k = 0; k < 3; k++) {
-				glm::vec3 vertex = triangle.vertices[k];
-				glm::vec3 normal = glm::vec3(0, 0, 0);
-				for (size_t l = 0; l < object.triangles.size(); l++) {
-					ModelTriangle otherTriangle = object.triangles[l];
-					if (otherTriangle.vertices[0] == vertex || otherTriangle.vertices[1] == vertex || otherTriangle.vertices[2] == vertex) {
-						normal += otherTriangle.normal;
-					}
-				}
-				triangle.vertexNormals[k] = glm::normalize(normal);
-			}
-			object.triangles[j] = triangle;
-		}
-		object.updateBoundingBox();
+	for (Object3d& object : this->objects) {
+		object.updateTriangles();
 	}
 }
 

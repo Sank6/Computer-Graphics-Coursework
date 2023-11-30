@@ -54,10 +54,9 @@ void Object3d::updateTriangleNormals() {
 }
 
 void Object3d::updateTriangles() {
-  for (size_t i = 0; i < this->triangles.size(); i++) {
-    ModelTriangle& triangle = this->triangles[i];
+  for (ModelTriangle& triangle: this->triangles) {
     for (size_t j = 0; j < 3; j++) {
-      triangle.transformedVertices[j] = glm::vec3(this->transformation * glm::vec4(triangle.vertices[j], 1.0f));
+      triangle.transformedVertices[j] = this->transformPoint(triangle.vertices[j]);
     }
   }
   this->updateBoundingBox();

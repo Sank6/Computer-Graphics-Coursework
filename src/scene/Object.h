@@ -21,4 +21,5 @@ public:
 	void setStartPosition();
 	void reset();
 	void rotateAroundPoint(glm::vec3, float, int);
+	glm::vec3 transformPoint(glm::vec3 point);
 };

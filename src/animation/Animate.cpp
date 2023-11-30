@@ -7,11 +7,6 @@ std::string intToString(int num) {
 }
 
 void moveSceneRight(Scene& scene) {
-    // for (Object3d& object : scene.objects) {
-    //     object.translate(glm::vec3(1.0f, 0.0f, 0.0f));
-    //     object.updateTriangles();
-    // }
-
     scene.camera.translate(glm::vec3(-0.01f, 0.0f, 0.0f));
     scene.camera.rotateAroundPoint(glm::vec3(0.0f), 0.01f, 1);
 }

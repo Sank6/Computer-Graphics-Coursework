@@ -7,7 +7,7 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   Object3d& object = scene->objects[intersection.objectIndex];
 
   glm::vec3 lightRayDirection = glm::normalize(light.position - intersection.intersectionPoint);
-  glm::vec3 lightRayOrigin = intersection.intersectionPoint + lightRayDirection * 0.001f;
+  glm::vec3 lightRayOrigin = intersection.intersectionPoint + lightRayDirection * 0.05f;
 
   float distanceToLight = glm::distance(intersection.intersectionPoint, light.position);
   float angleOfIncidence = glm::dot(normal, -lightRayDirection);
@@ -18,8 +18,7 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   // Shadows
   if (object.shading == FLAT && scene->shadowPass) {
     float shadow = 0.1f;
-    glm::vec3 offsetLightRayDirection = lightRayDirection;
-    RayTriangleIntersection shadowIntersection = getClosestValidIntersection(offsetLightRayDirection, lightRayOrigin, scene, 1.0f, 0, gouradPrePass);
+    RayTriangleIntersection shadowIntersection = getClosestValidIntersection(lightRayDirection, lightRayOrigin, scene, 1.0f, 0, gouradPrePass);
     if (shadowIntersection.triangleIndex != -1 && glm::distance(shadowIntersection.intersectionPoint, lightRayOrigin) < distanceToLight)
       brightness -= shadow;
   }
@@ -58,15 +57,18 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
     if (!intersectsAABB(rayOrigin, rayDirection, object.boundingBox)) continue;
     for (size_t i = 0; i < object.triangles.size(); i++) {
       ModelTriangle& triangle = object.triangles[i];
-      glm::vec3 e0 = triangle.vertices[1] - triangle.vertices[0];
-      glm::vec3 e1 = triangle.vertices[2] - triangle.vertices[0];
-      glm::vec3 SPVector = rayOrigin - triangle.vertices[0];
+      glm::vec3 e0 = triangle.transformedVertices[1] - triangle.transformedVertices[0];
+      glm::vec3 e1 = triangle.transformedVertices[2] - triangle.transformedVertices[0];
+      glm::vec3 SPVector = rayOrigin - triangle.transformedVertices[0];
       glm::mat3 DEMatrix(-rayDirection, e0, e1);
       glm::vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;
 
       float t = possibleSolution.x;  // Distance from camera to intersection
       float u = possibleSolution.y;  // Distance along e0
       float v = possibleSolution.z;  // Distance along e1
+
+      glm::vec3 normal = glm::normalize(glm::cross(e0, e1));
+      if (glm::dot(rayDirection, normal) > 0) continue;
 
       if (std::isnan(t) || std::isnan(u) || std::isnan(v)) continue;
 
@@ -184,7 +186,7 @@ void Draw::drawSceneRayTraced() {
       ModelTriangle& triangle = object.triangles[j];
       if (object.shading == GOURAD) {
         for (size_t k = 0; k < 3; k++) {
-          glm::vec3 rayDirection = glm::normalize(triangle.vertices[k] - scene.camera.getPosition());
+          glm::vec3 rayDirection = glm::normalize(triangle.transformedVertices[k] - scene.camera.getPosition());
           glm::vec3 rayOrigin = scene.camera.getPosition();
           RayTriangleIntersection closestIntersection = getClosestValidIntersection(rayDirection, rayOrigin, &scene, 1.0f, 1, true);
           if (closestIntersection.triangleIndex != -1) {
