@@ -150,11 +150,14 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 	}
 
 	if (currentObject.name == "sphere") {
-		currentObject.shading = PHONG;
 		currentObject.transparency = 0.7f;
 		currentObject.refractiveIndex = 1.8f;
 	}
 	if (currentObject.name == "tall_box") {
+		currentObject.reflectiveness = 0.35f;
+		currentObject.specularStrength = 3.0f;
+	}
+	if (currentObject.name == "bunny") {
 		currentObject.reflectiveness = 0.35f;
 		currentObject.specularStrength = 3.0f;
 	}

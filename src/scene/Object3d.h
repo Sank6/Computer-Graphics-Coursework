@@ -30,4 +30,6 @@ public:
 
     void addTriangle(ModelTriangle);
     void updateBoundingBox();
+    void updateTriangleNormals();
+    void updateTriangles();
 };

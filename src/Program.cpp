@@ -1,9 +1,9 @@
 #include "render/Draw.h"
+#include "animation/Animate.h"
 
-#define WIDTH 1280
-#define HEIGHT 720
+#define WIDTH 640
+#define HEIGHT 480
 
-enum Mode { WIREFRAME, RASTERISED, RAYTRACED };
 struct Fps { float average; float last;  unsigned long count; };
 
 int main(int argc, char* argv[]) {
@@ -16,7 +16,8 @@ int main(int argc, char* argv[]) {
     
     Scene scene = Scene(window, camera);
     scene.loadModel("../../../combined.obj", 0.35f);
-    Light light2 = Light(glm::vec3(0.0f, 0.8f, 1.0f), 0.6f, true);
+    // scene.loadModel("../../../bunny.obj", 1.2f);
+    Light light2 = Light(glm::vec3(-1.0f, 1.8f, 2.0f), 5.0f, true);
     scene.addLight(light2);
     Draw draw = Draw(window, scene);
 
@@ -28,6 +29,10 @@ int main(int argc, char* argv[]) {
     fpsMap[WIREFRAME] = Fps();
     fpsMap[RASTERISED] = Fps();
     fpsMap[RAYTRACED] = Fps();
+
+    // animate(draw, 0, 120, moveSceneRight, RAYTRACED);
+    // return 0;
+
 
     while (true) {
         // Measure time taken to render scene

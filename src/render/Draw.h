@@ -18,11 +18,12 @@
 #include "../scene/Camera.h"
 #include "../scene/Scene.h"
 
+enum Mode { WIREFRAME, RASTERISED, RAYTRACED };
+
 class Draw {
-private:
+public:
 	DrawingWindow &window;
 	Scene &scene;
-public:
 	Draw(DrawingWindow &window, Scene &scene);
 	void drawSceneRasterised();
 	void drawSceneWireFrame();

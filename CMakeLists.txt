@@ -48,6 +48,7 @@ add_executable(
         src/scene/Camera.cpp
         src/scene/Light.cpp
         src/Program.cpp
+        src/animation/Animate.cpp
 )
 
 if (MSVC)
