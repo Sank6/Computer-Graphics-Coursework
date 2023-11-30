@@ -8,8 +8,8 @@ Object3d::Object3d(std::string name, DrawingWindow& window) : GenericObject(wind
   this->textureMapping = false;
   this->triangles = std::vector<ModelTriangle>();
 
-  this->reflectiveness = 0.2f;
-  this->specularStrength = 0.1f;
+  this->reflectiveness = 0.0f;
+  this->specularStrength = 0.5f;
   this->refractiveIndex = 1.0f;
   this->transparency = 0.0f;
 }

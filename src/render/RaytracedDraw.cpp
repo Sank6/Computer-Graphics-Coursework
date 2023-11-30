@@ -157,6 +157,8 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
     RayTriangleIntersection refractIntersection = getClosestValidIntersection(refractDirection, offsetOrigin, scene, closestIntersection.refractiveIndex, bounces - 1, gouradPrePass);
     if (refractIntersection.triangleIndex != -1)
       closestIntersection.textureColour = combine(closestIntersection.textureColour, refractIntersection.textureColour, 1 - object.transparency);
+    else 
+      closestIntersection.textureColour = combine(closestIntersection.textureColour, colourToInt(scene->backgroundColour), 1 - object.transparency);
   }
 
   return closestIntersection;

@@ -1,8 +1,8 @@
 #include "render/Draw.h"
 #include "animation/Animate.h"
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 960
+#define HEIGHT 720
 
 struct Fps { float average; float last;  unsigned long count; };
 
@@ -32,9 +32,8 @@ int main(int argc, char* argv[]) {
     fpsMap[RASTERISED] = Fps();
     fpsMap[RAYTRACED] = Fps();
 
-    // animate(draw, 0, 120, moveSceneRight, RAYTRACED);
+    // animate(draw, 0, 120, rotateCam, RAYTRACED);
     // return 0;
-
 
     while (true) {
         // Measure time taken to render scene

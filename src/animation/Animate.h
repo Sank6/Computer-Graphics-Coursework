@@ -7,7 +7,7 @@
 #include "../render/Draw.h"
 #include "../scene/Scene.h"
 
-void moveSceneRight(Scene& scene);
+void rotateCam(Scene& scene);
 
 void animate(Draw draw, int animationID, float frames, void (*animation)(Scene& scene), Mode mode);
 

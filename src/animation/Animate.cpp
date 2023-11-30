@@ -6,9 +6,8 @@ std::string intToString(int num) {
     return oss.str();
 }
 
-void moveSceneRight(Scene& scene) {
-    scene.camera.translate(glm::vec3(-0.01f, 0.0f, 0.0f));
-    scene.camera.rotateAroundPoint(glm::vec3(0.0f), 0.01f, 1);
+void rotateCam(Scene& scene) {
+    scene.camera.rotateAroundPoint(glm::vec3(0.0f), 0.05f, 1);
 }
 
 void animate(Draw draw, int animationID, float frames, void (*animation)(Scene& scene), Mode mode) {

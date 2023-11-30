@@ -150,8 +150,8 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 	}
 
 	if (currentObject.name == "sphere") {
-		currentObject.transparency = 0.7f;
-		currentObject.refractiveIndex = 5.0f;
+		currentObject.transparency = 1.0f;
+		currentObject.refractiveIndex = 1.1f;
 	}
 	if (currentObject.name == "tall_box") {
 		currentObject.reflectiveness = 0.35f;
