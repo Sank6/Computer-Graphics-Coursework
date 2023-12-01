@@ -10,6 +10,17 @@ void rotateCam(Scene& scene) {
     scene.camera.rotateAroundPoint(glm::vec3(0.0f), 0.05f, 1);
 }
 
+void move(Scene& scene) {
+    for (Object3d& object : scene.objects) {
+        object.translate(glm::vec3(0.0f, -0.05f, 0.0f));
+        object.updateTriangles();
+    }
+
+    for (Light& light : scene.lights) {
+        //light.translate(glm::vec3(0.0f, -0.05f, 0.0f));
+    }
+}
+
 void animate(Draw draw, int animationID, float frames, void (*animation)(Scene& scene), Mode mode) {
     for (size_t i = 0; i < frames; i++) {
         uint32_t start = SDL_GetTicks();

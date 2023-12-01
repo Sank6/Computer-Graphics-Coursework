@@ -16,11 +16,11 @@ int main(int argc, char* argv[]) {
     
     Scene scene = Scene(window, camera);
     scene.loadModel("../../../combined.obj", 0.35f);
-    // scene.loadModel("../../../bunny.obj", 1.2f);
-    // Light light2 = Light(glm::vec3(-1.0f, 1.8f, 2.0f), 5.0f, true);
-    // scene.addLight(light2);
-    Light light = Light(glm::vec3(0.0f, 0.8f, 0.0f), 0.5f, true);
+
+    Light light = Light(window, 0.7f);
+    light.setPosition(glm::vec3(0.0f, 0.8f, 0.0f));
     scene.addLight(light);
+
     Draw draw = Draw(window, scene);
 
     float rotationSpeed = 0.1f;
@@ -32,8 +32,8 @@ int main(int argc, char* argv[]) {
     fpsMap[RASTERISED] = Fps();
     fpsMap[RAYTRACED] = Fps();
 
-    // animate(draw, 0, 120, rotateCam, RAYTRACED);
-    // return 0;
+    animate(draw, 0, 20, move, RAYTRACED);
+    return 0;
 
     while (true) {
         // Measure time taken to render scene

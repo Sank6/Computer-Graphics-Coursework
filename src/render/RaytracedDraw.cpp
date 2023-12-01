@@ -6,10 +6,10 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   float brightness = 0.1f;
   Object3d& object = scene->objects[intersection.objectIndex];
 
-  glm::vec3 lightRayDirection = glm::normalize(light.position - intersection.intersectionPoint);
-  glm::vec3 lightRayOrigin = intersection.intersectionPoint + lightRayDirection * 0.05f;
+  glm::vec3 lightRayDirection = glm::normalize(light.getPosition() - intersection.intersectionPoint);
+  glm::vec3 lightRayOrigin = intersection.intersectionPoint + lightRayDirection * 0.001f;
 
-  float distanceToLight = glm::distance(intersection.intersectionPoint, light.position);
+  float distanceToLight = glm::distance(intersection.intersectionPoint, light.getPosition());
   float angleOfIncidence = glm::dot(normal, -lightRayDirection);
 
   glm::vec3 viewDirection = glm::normalize(rayOrigin - intersection.intersectionPoint);

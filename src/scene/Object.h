@@ -16,6 +16,7 @@ public:
     GenericObject(DrawingWindow &window);
 
 	glm::vec3 getPosition();
+	void setPosition(glm::vec3);
 	void translate(glm::vec3);
 	void transform(glm::mat4, bool);
 	void setStartPosition();

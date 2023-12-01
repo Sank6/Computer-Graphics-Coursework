@@ -13,6 +13,12 @@ glm::vec3 GenericObject::getPosition() {
   return glm::vec3(transformation[3][0], transformation[3][1], transformation[3][2]);
 }
 
+void GenericObject::setPosition(glm::vec3 position) {
+  transformation[3][0] = position.x;
+  transformation[3][1] = position.y;
+  transformation[3][2] = position.z;
+}
+
 void GenericObject::translate(glm::vec3 translation) {
   glm::mat4 translationMatrix = {
       1, 0, 0, 0,

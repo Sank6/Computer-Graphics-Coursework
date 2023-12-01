@@ -1,14 +1,14 @@
 #pragma once
 
+#include "Object.h"
 #include <glm/glm.hpp>
 
-class Light {
+class Light : public GenericObject {
 public:
-	glm::vec3 position;
 	float intensity;
     float radius;
 	bool state;
 	
 	Light();
-	Light(glm::vec3 position, float intensity, bool state);
+	Light(DrawingWindow &window, float intensitys);
 };
