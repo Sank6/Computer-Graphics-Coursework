@@ -171,11 +171,14 @@ void Scene::addLight(Light light) {
 }
 
 void Scene::addObject(Object3d object) {
+
+  if (object.name == "tall_box" || object.name == "short_box") {
+    object.cull = false;
+  }
   
   if (object.name == "sphere") {
-    // object.transparency = 1.0f;
-    // object.refractiveIndex = 2.4f;
-    object.shading = GOURAUD;
+    object.cull = false;
+    object.reflectiveness = 1.0f;
   }
 
   if (object.name == "floor") {
@@ -183,11 +186,20 @@ void Scene::addObject(Object3d object) {
   }
 
   if (object.name == "bunny") {
-    object.transparency = 0.0f;
+    object.shading = PHONG;
     object.reflectiveness = 1.0f;
   }
 
   objects.push_back(object);
+}
+
+void::Scene::unloadObject(std::string name) {
+  for (long unsigned int i = 0; i < objects.size(); i++) {
+    if (objects[i].name == name) {
+      objects.erase(objects.begin() + i);
+      break;
+    }
+  }
 }
 
 void Scene::clearScene() {
@@ -197,4 +209,8 @@ void Scene::clearScene() {
 
 void Scene::addEnvironmentMap(std::string filename) {
   this->environmentMap = TextureMap(filename);
+}
+
+void Scene::removeEnvironmentMap() {
+  this->environmentMap = TextureMap();
 }

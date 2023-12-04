@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <limits.h>
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 320
+#define HEIGHT 240
 
 struct Fps { float average; float last;  unsigned long count; };
 
@@ -15,44 +15,56 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     Camera camera = Camera(window);
-	camera.translate(glm::vec3(0.0f, 0.0f, 4.0f));
+	camera.translate(glm::vec3(0.0f, 0.0f, 6.0f));
     camera.setStartPosition();
     
     Scene scene = Scene(window, camera);
 
-    scene.loadModel("/home/sank/Computer-Graphics-Coursework/combined.obj", 0.35f);
+    Light cornellLight = Light(window, 1.7f);
+    cornellLight.setPosition(glm::vec3(0.0f, 0.6f, 1.5f));
 
-    // scene.loadModel("/home/sank/Computer-Graphics-Coursework/bunny.obj", 1.0f);
-
-    // scene.addEnvironmentMap("/home/sank/Computer-Graphics-Coursework/envmap.ppm");
-
-    Light light = Light(window, 1.7f);
-    light.setPosition(glm::vec3(0.0f, 0.6f, 1.5f));
-    scene.addLight(light);
+    Light bunnyLight = Light(window, 1.7f);
+    bunnyLight.setPosition(glm::vec3(0.0f, 0.6f, 1.5f));
 
     Draw draw = Draw(window, scene);
 
     float rotationSpeed = 0.1f;
     float translationSpeed = 0.1f;
     bool rotating = false;
-    Mode mode = WIREFRAME;
+    Mode mode = RAYTRACED;
     std::unordered_map<Mode, Fps> fpsMap;
     fpsMap[WIREFRAME] = Fps();
     fpsMap[RASTERISED] = Fps();
     fpsMap[RAYTRACED] = Fps();
 
-    // std::string command = "rm -rf " OUTPUT_FOLDER "*";
-    // int out = system(command.c_str());
-    // int multiplier = 12;
-    // scene.loadModel("/home/sank/Computer-Graphics-Coursework/combined.obj", 0.35f);
-    // animate(draw, 0, 1 * multiplier, doNothing, WIREFRAME);
-    // animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
-    // animate(draw, 2, 4 * multiplier, rotateCam, RAYTRACED);
-    // animate(draw, 3, 2 * multiplier, moveLightLeft, RAYTRACED);
-    // animate(draw, 4, 4 * multiplier, moveLightRight, RAYTRACED);
-    // animate(draw, 5, 2 * multiplier, moveLightLeft, RAYTRACED);
-    // animate(draw, 6, 4 * multiplier, moveCornellBoxesAndSphere, RAYTRACED);
-    // return 0;
+    std::string command = "rm -rf " OUTPUT_FOLDER "*";
+    int out = system(command.c_str());
+    int multiplier = 24;
+    
+    scene.addLight(cornellLight);
+    scene.addEnvironmentMap("/home/sank/Computer-Graphics-Coursework/space.ppm");
+    scene.loadModel("/home/sank/Computer-Graphics-Coursework/combined.obj", 0.35f);
+    animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
+    animate(draw, 0, 1 * multiplier, doNothing, WIREFRAME);
+    animate(draw, 3, 4 * multiplier, rollout, RAYTRACED);
+    animate(draw, 4, 2 * multiplier, slowDisappearCornell, RAYTRACED);
+    scene.lights.clear();
+    scene.addLight(bunnyLight);
+    scene.loadModel("/home/sank/Computer-Graphics-Coursework/sphereA.obj", 0.35f);
+    scene.objects[0].shading = GOURAUD;
+    animate(draw, 5, 1 * multiplier, moveLightLeft, RAYTRACED);
+    animate(draw, 6, 2 * multiplier, moveLightRight, RAYTRACED);
+    animate(draw, 7, 1 * multiplier, moveLightLeft, RAYTRACED);
+    scene.objects[0].shading = PHONG;
+    animate(draw, 8, 1 * multiplier, moveLightLeft, RAYTRACED);
+    animate(draw, 9, 2 * multiplier, moveLightRight, RAYTRACED);
+    animate(draw, 10, 1 * multiplier, moveLightLeft, RAYTRACED);
+    scene.objects[0].transparency = 1.0f;
+    scene.objects[0].refractiveIndex = 1.5f;
+    scene.addEnvironmentMap("/home/sank/Computer-Graphics-Coursework/envmap.ppm");
+    animate(draw, 11, 4 * multiplier, rotateCam, RAYTRACED);
+
+    return 0;
 
     while (true) {
         // Measure time taken to render scene

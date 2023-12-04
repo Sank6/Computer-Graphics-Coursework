@@ -34,6 +34,8 @@ public:
 	void loadModel(std::string, float scalingFactor = 0.35f);
 	void addLight(Light light);
     void addObject(Object3d object);
+	void unloadObject(std::string name);
 	void clearScene();
 	void addEnvironmentMap(std::string filename);
+	void removeEnvironmentMap();
 };

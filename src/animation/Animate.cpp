@@ -10,28 +10,12 @@ void doNothing(Scene& scene, int frames, int currentFrame) {
     return;
 }
 
-void rotateCam(Scene& scene, int frames, int currentFrame) {
-    float angle = 2 * M_PI / frames;
-    scene.camera.rotateAroundPoint(glm::vec3(0.0f), angle, 1);
-}
-
 void moveLightLeft(Scene& scene, int frames, int currentFrame) {
     float startpos = 0.0f;
     float endpos = -1.5f;
     float step = (endpos - startpos) / frames;
     for (Light& light : scene.lights) {
         light.translate(glm::vec3(step, 0.0f, 0.0f));
-    }
-}
-
-void moveCornellBoxesAndSphere(Scene& scene, int frames, int currentFrame) {
-    float startpos = 0.0f;
-    float endpos = -0.5f;
-    float step = (endpos - startpos) / frames;
-    for (Object3d& object : scene.objects) {
-        if (object.name == "tall_box" || object.name == "short_box" || object.name == "sphere") {
-            object.translate(glm::vec3(step, 0.0f, 0.0f));
-        }
     }
 }
 
@@ -42,6 +26,51 @@ void moveLightRight(Scene& scene, int frames, int currentFrame) {
     for (Light& light : scene.lights) {
         light.translate(glm::vec3(step, 0.0f, 0.0f));
     }
+}
+
+void rollout(Scene& scene, int frames, int currentFrame) {
+    float startpos = 0.0f;
+    float endpos = 0.2f;
+    float step = (endpos - startpos) / frames;
+
+    float angle = 2 * M_PI / frames;
+    scene.camera.rotateAroundPoint(glm::vec3(0.0f), angle, 1);
+
+    for (Object3d& object : scene.objects) {
+        if (object.name == "tall_box" || object.name == "short_box") {
+            object.translate(glm::vec3(0.0f, step, 0.0f));
+            object.updateTriangles();
+        } else if (object.name == "sphere") {
+            object.translate(glm::vec3(0.0f, step * 2, 0.0f));
+            object.updateTriangles();
+        }
+    }
+    
+    float camStart = 6.0f;
+    float camEnd = 2.75f;
+    float camStep = (camEnd - camStart) / frames;
+    scene.camera.translate(glm::vec3(0.0f, 0.0f, camStep));
+}
+
+void rotateCam(Scene& scene, int frames, int currentFrame) {
+    float angle = 2 * M_PI / frames;
+    scene.camera.rotateAroundPoint(glm::vec3(0.0f), angle, 1);
+}
+
+void slowDisappearCornell(Scene& scene, int frames, int currentFrame) {
+    float frac = (float) (currentFrame + 1) / frames;
+    if (frac > 0.8f) scene.clearScene();
+    else if (frac > 0.6f) scene.unloadObject("sphere");
+    else if (frac > 0.4f) scene.unloadObject("tall_box");
+    else if (frac > 0.2f) scene.unloadObject("short_box");
+    
+    float startpos = 2.75f;
+    float endpos = 4.0f;
+    float step = (endpos - startpos) / frames;
+    scene.camera.translate(glm::vec3(0.0f, 0.0f, step));
+}
+
+void panOut(Scene& scene, int frames, int currentFrame) {
 }
 
 void animate(Draw draw, int animationID, float frames, void (*animation)(Scene& scene, int frames, int currentFrame), Mode mode) {

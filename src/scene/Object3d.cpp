@@ -12,6 +12,7 @@ Object3d::Object3d(std::string name, DrawingWindow& window) : GenericObject(wind
   this->specularStrength = 0.5f;
   this->refractiveIndex = 1.0f;
   this->transparency = 0.0f;
+  this->cull = true;
 }
 
 void Object3d::addTriangle(ModelTriangle triangle) {

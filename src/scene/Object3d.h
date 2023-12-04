@@ -24,6 +24,7 @@ public:
     float transparency;
 
     bool textureMapping;
+    bool cull;
 
     Object3d();
     Object3d(std::string name, DrawingWindow &window);

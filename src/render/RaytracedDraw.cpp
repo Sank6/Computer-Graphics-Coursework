@@ -31,7 +31,7 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   if (object.shading == FLAT && scene->shadowPass) {
     float shadowMul = 0.2f;
     float shadow = 0.0f;
-    const int numShadowRays = 10;
+    const int numShadowRays = 1;
 
     thread_local std::array<glm::vec3, numShadowRays> offsets;
     gen_offsets(numShadowRays, 0.025f, offsets);
@@ -92,7 +92,7 @@ RayTriangleIntersection getClosestValidIntersection(glm::vec3& rayDirection, glm
       float v = possibleSolution.z;  // Distance along e1
 
       glm::vec3 normal = glm::normalize(glm::cross(e0, e1));
-      if (glm::dot(rayDirection, normal) > 0) continue;
+      if (glm::dot(rayDirection, normal) > 0 && object.cull) continue;
 
       if (std::isnan(t) || std::isnan(u) || std::isnan(v)) continue;
 
