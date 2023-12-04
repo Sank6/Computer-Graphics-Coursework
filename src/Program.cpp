@@ -1,8 +1,12 @@
 #include "render/Draw.h"
 #include "animation/Animate.h"
 
-#define WIDTH 960
-#define HEIGHT 720
+#include <unistd.h>
+#include <stdio.h>
+#include <limits.h>
+
+#define WIDTH 640
+#define HEIGHT 480
 
 struct Fps { float average; float last;  unsigned long count; };
 
@@ -15,10 +19,15 @@ int main(int argc, char* argv[]) {
     camera.setStartPosition();
     
     Scene scene = Scene(window, camera);
-    scene.loadModel("../../../combined.obj", 0.35f);
 
-    Light light = Light(window, 0.7f);
-    light.setPosition(glm::vec3(0.0f, 0.8f, 0.0f));
+    scene.loadModel("/home/sank/Computer-Graphics-Coursework/combined.obj", 0.35f);
+
+    // scene.loadModel("/home/sank/Computer-Graphics-Coursework/bunny.obj", 1.0f);
+
+    // scene.addEnvironmentMap("/home/sank/Computer-Graphics-Coursework/envmap.ppm");
+
+    Light light = Light(window, 1.7f);
+    light.setPosition(glm::vec3(0.0f, 0.6f, 1.5f));
     scene.addLight(light);
 
     Draw draw = Draw(window, scene);
@@ -26,14 +35,24 @@ int main(int argc, char* argv[]) {
     float rotationSpeed = 0.1f;
     float translationSpeed = 0.1f;
     bool rotating = false;
-    Mode mode = RAYTRACED;
+    Mode mode = WIREFRAME;
     std::unordered_map<Mode, Fps> fpsMap;
     fpsMap[WIREFRAME] = Fps();
     fpsMap[RASTERISED] = Fps();
     fpsMap[RAYTRACED] = Fps();
 
-    animate(draw, 0, 20, move, RAYTRACED);
-    return 0;
+    // std::string command = "rm -rf " OUTPUT_FOLDER "*";
+    // int out = system(command.c_str());
+    // int multiplier = 12;
+    // scene.loadModel("/home/sank/Computer-Graphics-Coursework/combined.obj", 0.35f);
+    // animate(draw, 0, 1 * multiplier, doNothing, WIREFRAME);
+    // animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
+    // animate(draw, 2, 4 * multiplier, rotateCam, RAYTRACED);
+    // animate(draw, 3, 2 * multiplier, moveLightLeft, RAYTRACED);
+    // animate(draw, 4, 4 * multiplier, moveLightRight, RAYTRACED);
+    // animate(draw, 5, 2 * multiplier, moveLightLeft, RAYTRACED);
+    // animate(draw, 6, 4 * multiplier, moveCornellBoxesAndSphere, RAYTRACED);
+    // return 0;
 
     while (true) {
         // Measure time taken to render scene

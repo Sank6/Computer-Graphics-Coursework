@@ -28,10 +28,12 @@ public:
 	bool refractionPass;
 
 	Colour backgroundColour;
+    TextureMap environmentMap;
 
 	Scene(DrawingWindow &window, Camera &camera);
 	void loadModel(std::string, float scalingFactor = 0.35f);
 	void addLight(Light light);
     void addObject(Object3d object);
 	void clearScene();
+	void addEnvironmentMap(std::string filename);
 };

@@ -1,6 +1,4 @@
-# Blender 3.6.4
-# www.blender.org
-mtllib bunnyscaled.mtl
+
 o bunny
 v -0.034102 0.533367 0.217544
 v -0.817192 0.755186 0.296561

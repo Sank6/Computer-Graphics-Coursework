@@ -5,7 +5,7 @@
 
 #include <vector>
 
-enum Shading { FLAT, PHONG, GOURAD };
+enum Shading { FLAT, PHONG, GOURAUD };
 
 struct BoundingBox {
     glm::vec3 min;

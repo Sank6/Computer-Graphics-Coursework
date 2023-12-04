@@ -31,7 +31,7 @@ Colour intToColour(uint32_t colour) {
 }
 
 
-Colour gouradShading(Colour a, Colour b, Colour c, float u, float v) {
+Colour gouraudShading(Colour a, Colour b, Colour c, float u, float v) {
   float w = 1.0f - u - v;
   float red = a.red * w + b.red * u + c.red * v;
   float green = a.green * w + b.green * u + c.green * v;
