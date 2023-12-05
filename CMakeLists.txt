@@ -54,6 +54,7 @@ add_executable(
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/framesout)
 
 if (MSVC)
     target_compile_options(ComputerGraphics

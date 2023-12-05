@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <limits.h>
 
-#define WIDTH 320
-#define HEIGHT 240
+#define WIDTH 640
+#define HEIGHT 480
 
 #define ASSETS_FOLDER "./assets/"
 
@@ -41,15 +41,7 @@ int main(int argc, char* argv[]) {
 
     std::string command = "rm -rf " OUTPUT_FOLDER "*";
     int out = system(command.c_str());
-    int multiplier = 24;
-
-    char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        std::cout << "Current working dir: " << cwd << std::endl;
-    } else {
-        perror("getcwd() error");
-        return 1;
-    }
+    int multiplier = 60;
     
     scene.addLight(cornellLight);
     scene.addEnvironmentMap(ASSETS_FOLDER "space.ppm");

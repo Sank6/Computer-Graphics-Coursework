@@ -7,7 +7,7 @@
 #include "../render/Draw.h"
 #include "../scene/Scene.h"
 
-#define OUTPUT_FOLDER "/home/sank/framesout/"
+#define OUTPUT_FOLDER "./framesout/"
 
 void rotateCam(Scene& scene, int frames, int currentFrame);
 void moveLightLeft(Scene& scene, int frames, int currentFrame);

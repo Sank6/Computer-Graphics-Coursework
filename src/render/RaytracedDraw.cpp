@@ -31,7 +31,7 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   if (object.shading == FLAT && scene->shadowPass) {
     float shadowMul = 0.2f;
     float shadow = 0.0f;
-    const int numShadowRays = 1;
+    const int numShadowRays = 10;
 
     thread_local std::array<glm::vec3, numShadowRays> offsets;
     gen_offsets(numShadowRays, 0.025f, offsets);
