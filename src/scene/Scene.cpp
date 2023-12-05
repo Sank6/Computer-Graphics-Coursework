@@ -208,6 +208,12 @@ void Scene::clearScene() {
 }
 
 void Scene::addEnvironmentMap(std::string filename) {
+  if (filename == "") return;
+
+  std::fstream file(filename);
+  if (!file.good()) return;
+  file.close();
+  
   this->environmentMap = TextureMap(filename);
 }
 
