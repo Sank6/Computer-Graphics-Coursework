@@ -53,6 +53,8 @@ add_executable(
         src/animation/Animate.cpp
 )
 
+file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+
 if (MSVC)
     target_compile_options(ComputerGraphics
             PUBLIC

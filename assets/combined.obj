@@ -1,4 +1,4 @@
-mtllib /home/sank/Computer-Graphics-Coursework/cornell-box.mtl
+mtllib cornell-box.mtl
 o back_wall
 s 0
 v -2.715011 -2.742686 -2.785598

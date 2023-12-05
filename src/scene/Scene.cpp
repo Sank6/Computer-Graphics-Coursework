@@ -30,9 +30,10 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
   std::vector<Colour> colours;
   std::unordered_map<std::string, std::string> textureMap;
   if (!objFile.eof()) {
-    std::string mtlFileName = line.substr(7, line.length() - 7);
+    std::string directory = fileName.substr(0, fileName.find_last_of("/\\") + 1);
+    std::string mtlFilePath = directory + line.substr(7, line.length() - 7);
 
-    std::ifstream mtlFile(mtlFileName);
+    std::ifstream mtlFile(mtlFilePath);
 
     if (mtlFile.good()) {
       std::string currentColourString = "";
@@ -57,9 +58,10 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
           Colour nc = Colour(currentColourString, r, g, b);
           colours.push_back(nc);
         } else if (line.substr(0, 6) == "map_Kd") {
-          std::string textureFileName = line.substr(7, line.length() - 7);
+          std::string directory = mtlFilePath.substr(0, mtlFilePath.find_last_of("/\\") + 1);
+          std::string textureFilePath = directory + line.substr(7, line.length() - 7);
           std::string textureName = currentColourString;
-          textureMap[textureName] = textureFileName;
+          textureMap[textureName] = textureFilePath;
         }
 
         if (mtlFile.eof()) break;
@@ -213,7 +215,7 @@ void Scene::addEnvironmentMap(std::string filename) {
   std::fstream file(filename);
   if (!file.good()) return;
   file.close();
-  
+
   this->environmentMap = TextureMap(filename);
 }
 

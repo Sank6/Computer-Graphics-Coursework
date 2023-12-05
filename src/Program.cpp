@@ -8,6 +8,8 @@
 #define WIDTH 320
 #define HEIGHT 240
 
+#define ASSETS_FOLDER "assets/"
+
 struct Fps { float average; float last;  unsigned long count; };
 
 int main(int argc, char* argv[]) {
@@ -40,17 +42,26 @@ int main(int argc, char* argv[]) {
     std::string command = "rm -rf " OUTPUT_FOLDER "*";
     int out = system(command.c_str());
     int multiplier = 24;
+
+    // print pwd
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+        return 1;
+    }
     
     scene.addLight(cornellLight);
-    scene.addEnvironmentMap("/home/sank/Computer-Graphics-Coursework/space.ppm");
-    scene.loadModel("/home/sank/Computer-Graphics-Coursework/combined.obj", 0.35f);
+    scene.addEnvironmentMap(ASSETS_FOLDER "space.ppm");
+    scene.loadModel(ASSETS_FOLDER "combined.obj", 0.35f);
     animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
     animate(draw, 0, 1 * multiplier, doNothing, WIREFRAME);
     animate(draw, 3, 4 * multiplier, rollout, RAYTRACED);
     animate(draw, 4, 2 * multiplier, slowDisappearCornell, RAYTRACED);
     scene.lights.clear();
     scene.addLight(bunnyLight);
-    scene.loadModel("/home/sank/Computer-Graphics-Coursework/sphereA.obj", 0.35f);
+    scene.loadModel(ASSETS_FOLDER "sphereA.obj", 0.35f);
     scene.objects[0].shading = GOURAUD;
     animate(draw, 5, 1 * multiplier, moveLightLeft, RAYTRACED);
     animate(draw, 6, 2 * multiplier, moveLightRight, RAYTRACED);
@@ -61,9 +72,8 @@ int main(int argc, char* argv[]) {
     animate(draw, 10, 1 * multiplier, moveLightLeft, RAYTRACED);
     scene.objects[0].transparency = 1.0f;
     scene.objects[0].refractiveIndex = 1.5f;
-    scene.addEnvironmentMap("/home/sank/Computer-Graphics-Coursework/envmap.ppm");
+    scene.addEnvironmentMap(ASSETS_FOLDER "envmap.ppm");
     animate(draw, 11, 4 * multiplier, rotateCam, RAYTRACED);
-
     return 0;
 
     while (true) {
