@@ -46,8 +46,8 @@ int main(int argc, char* argv[]) {
     scene.addLight(cornellLight);
     scene.addEnvironmentMap(ASSETS_FOLDER "space.ppm");
     scene.loadModel(ASSETS_FOLDER "cornell.obj", 0.35f);
-    animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
     animate(draw, 0, 1 * multiplier, doNothing, WIREFRAME);
+    animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
     animate(draw, 3, 4 * multiplier, rollout, RAYTRACED);
     animate(draw, 4, 2 * multiplier, slowDisappearCornell, RAYTRACED);
     scene.lights.clear();
