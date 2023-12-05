@@ -39,39 +39,38 @@ int main(int argc, char* argv[]) {
     fpsMap[RASTERISED] = Fps();
     fpsMap[RAYTRACED] = Fps();
 
-    std::string command = "rm -rf " OUTPUT_FOLDER "*";
-    int out = system(command.c_str());
-    int multiplier = 60;
-    
+    // std::string command = "rm -rf " OUTPUT_FOLDER "*";
+    // int out = system(command.c_str());
+    // int multiplier = 60;
     scene.addLight(cornellLight);
     scene.addEnvironmentMap(ASSETS_FOLDER "space.ppm");
     scene.loadModel(ASSETS_FOLDER "cornell.obj", 0.35f);
-    animate(draw, 0, 1 * multiplier, doNothing, WIREFRAME);
-    animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
-    animate(draw, 3, 4 * multiplier, rollout, RAYTRACED);
-    animate(draw, 4, 2 * multiplier, slowDisappearCornell, RAYTRACED);
-    scene.lights.clear();
-    scene.addLight(bunnyLight);
-    scene.loadModel(ASSETS_FOLDER "sphere.obj", 0.35f);
-    scene.objects[0].shading = GOURAUD;
-    animate(draw, 5, 1 * multiplier, moveLightLeft, RAYTRACED);
-    animate(draw, 6, 2 * multiplier, moveLightRight, RAYTRACED);
-    animate(draw, 7, 1 * multiplier, moveLightLeft, RAYTRACED);
-    scene.objects[0].shading = PHONG;
-    animate(draw, 8, 1 * multiplier, moveLightLeft, RAYTRACED);
-    animate(draw, 9, 2 * multiplier, moveLightRight, RAYTRACED);
-    animate(draw, 10, 1 * multiplier, moveLightLeft, RAYTRACED);
-    scene.objects[0].reflectiveness = 1.0f;
-    scene.addEnvironmentMap(ASSETS_FOLDER "vatican.ppm");
-    animate(draw, 11, 4 * multiplier, rotateCam, RAYTRACED);
-    scene.objects.clear();
-    scene.loadModel(ASSETS_FOLDER "bunny.obj", 0.8f);
-    scene.objects[0].shading = PHONG;
-    scene.objects[0].transparency = 0.8f;
-    scene.objects[0].refractiveIndex = 1.5f;
-    scene.addEnvironmentMap(ASSETS_FOLDER "christmas_room.ppm");
-    animate(draw, 12, 4 * multiplier, rotateCam, RAYTRACED);
-    return 0;
+    // animate(draw, 0, 1 * multiplier, doNothing, WIREFRAME);
+    // animate(draw, 1, 1 * multiplier, doNothing, RASTERISED);
+    // animate(draw, 3, 4 * multiplier, rollout, RAYTRACED);
+    // animate(draw, 4, 2 * multiplier, slowDisappearCornell, RAYTRACED);
+    // scene.lights.clear();
+    // scene.addLight(bunnyLight);
+    // scene.loadModel(ASSETS_FOLDER "sphere.obj", 0.35f);
+    // scene.objects[0].shading = GOURAUD;
+    // animate(draw, 5, 1 * multiplier, moveLightLeft, RAYTRACED);
+    // animate(draw, 6, 2 * multiplier, moveLightRight, RAYTRACED);
+    // animate(draw, 7, 1 * multiplier, moveLightLeft, RAYTRACED);
+    // scene.objects[0].shading = PHONG;
+    // animate(draw, 8, 1 * multiplier, moveLightLeft, RAYTRACED);
+    // animate(draw, 9, 2 * multiplier, moveLightRight, RAYTRACED);
+    // animate(draw, 10, 1 * multiplier, moveLightLeft, RAYTRACED);
+    // scene.objects[0].reflectiveness = 1.0f;
+    // scene.addEnvironmentMap(ASSETS_FOLDER "vatican.ppm");
+    // animate(draw, 11, 4 * multiplier, rotateCam, RAYTRACED);
+    // scene.objects.clear();
+    // scene.loadModel(ASSETS_FOLDER "bunny.obj", 0.8f);
+    // scene.objects[0].shading = PHONG;
+    // scene.objects[0].transparency = 0.8f;
+    // scene.objects[0].refractiveIndex = 1.5f;
+    // scene.addEnvironmentMap(ASSETS_FOLDER "christmas_room.ppm");
+    // animate(draw, 12, 4 * multiplier, rotateCam, RAYTRACED);
+    // return 0;
 
     while (true) {
         // Measure time taken to render scene
