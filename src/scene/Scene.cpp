@@ -24,7 +24,7 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 
   while (line.substr(0, 6) != "mtllib" && !objFile.eof()) {
     std::getline(objFile, line);
-    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
   }
   std::vector<Colour> colours;
   std::unordered_map<std::string, std::string> textureMap;
@@ -38,7 +38,7 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
       std::string currentColourString = "";
       for (int i = 0; i < MAX_LINES; i++) {
         std::getline(mtlFile, line);
-        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
         if (line.substr(0, 6) == "newmtl") {
           currentColourString = line.substr(7, line.length() - 7);
         } else if (line.substr(0, 2) == "Kd") {
@@ -82,7 +82,7 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 
   for (int i = 1; i < MAX_LINES; i++) {
     std::getline(objFile, line);
-    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
     if (line.substr(0, 2) == "v ") {
       std::string x = line.substr(2, line.find(' ', 2) - 2);
       std::string y = line.substr(line.find(' ', 2) + 1, line.find(' ', line.find(' ', 2) + 1) - line.find(' ', 2) - 1);
