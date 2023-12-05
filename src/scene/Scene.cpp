@@ -17,8 +17,6 @@ Scene::Scene(DrawingWindow &window, Camera &camera) : window(window), objects(st
 void Scene::loadModel(std::string fileName, float scalingFactor) {
   std::ifstream objFile(fileName);
   std::string line;
-
-  // Check if file exists
   if (!objFile.good()) {
     std::cout << "File does not exist" << std::endl;
     return;
@@ -34,8 +32,10 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
     std::string mtlFilePath = directory + line.substr(7, line.length() - 7);
 
     std::ifstream mtlFile(mtlFilePath);
+    std::cout << "Loading " << mtlFilePath << std::endl;
 
     if (mtlFile.good()) {
+      std::cout << "File exists" << std::endl;
       std::string currentColourString = "";
       for (int i = 0; i < MAX_LINES; i++) {
         std::getline(mtlFile, line);
@@ -66,15 +66,19 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 
         if (mtlFile.eof()) break;
       }
+      mtlFile.close();
     };
-    mtlFile.close();
+    mtlFile.clear();
+    for (Colour &colour : colours) {
+      std::cout << "Loaded " << colour.name << std::endl;
+    }
   }
   objFile.clear();
   objFile.seekg(0, std::ios::beg);
 
   std::vector<glm::vec3> vertices;
   std::vector<glm::vec2> textureCoords;
-  Colour currentColour = Colour("Default", 25, 25, 255);
+  Colour currentColour = Colour("Default", 50, 50, 50);
   if (colours.size() > 0) currentColour = colours[0];
   std::string currentTexture = "";
   Object3d currentObject;
@@ -157,7 +161,6 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
       break;
     }
   }
-  std::cout << "Loaded " << currentObject.name << std::endl;
   this->addObject(currentObject);
 
   objFile.close();
@@ -173,6 +176,7 @@ void Scene::addLight(Light light) {
 }
 
 void Scene::addObject(Object3d object) {
+  std::cout << "Loaded " << object.name << std::endl;
 
   if (object.name == "tall_box" || object.name == "short_box") {
     object.cull = false;
@@ -180,7 +184,7 @@ void Scene::addObject(Object3d object) {
   
   if (object.name == "sphere") {
     object.cull = false;
-    object.reflectiveness = 1.0f;
+    object.reflectiveness = 0.6f;
   }
 
   if (object.name == "floor") {
@@ -189,7 +193,8 @@ void Scene::addObject(Object3d object) {
 
   if (object.name == "bunny") {
     object.shading = PHONG;
-    object.reflectiveness = 1.0f;
+    object.transparency = 0.8f;
+    object.refractiveIndex = 1.4f;
   }
 
   objects.push_back(object);
@@ -213,7 +218,10 @@ void Scene::addEnvironmentMap(std::string filename) {
   if (filename == "") return;
 
   std::fstream file(filename);
-  if (!file.good()) return;
+  if (!file.good()) {
+    std::cout << "File does not exist: " << filename << std::endl;
+    return;
+  }
   file.close();
 
   this->environmentMap = TextureMap(filename);
