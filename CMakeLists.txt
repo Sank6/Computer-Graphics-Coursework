@@ -16,6 +16,8 @@ project(ComputerGraphics)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 # Note, we do this for glm because it's a header only library and because we shipped it with the project
 # normally you would use find_package(<package_name>) for libraries with actual objects
 set(GLM_INCLUDE_DIRS libs/glm-0.9.7.2)
