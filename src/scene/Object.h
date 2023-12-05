@@ -7,7 +7,6 @@
 
 class GenericObject {
 public:
-	std::string name;
 	glm::mat4 transformation;
 	glm::mat4 startPosition;
     int screenWidth, screenHeight;

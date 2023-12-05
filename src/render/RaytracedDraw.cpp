@@ -28,13 +28,14 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
   glm::vec3 reflectDirection = glm::normalize(glm::reflect(-lightRayDirection, normal));
 
   // Shadows
+  bool inShadow = false;
   if (object.shading == FLAT && scene->shadowPass) {
     float shadowMul = 0.2f;
     float shadow = 0.0f;
     const int numShadowRays = 10;
 
     thread_local std::array<glm::vec3, numShadowRays> offsets;
-    gen_offsets(numShadowRays, 0.025f, offsets);
+    gen_offsets(numShadowRays, 0.05f, offsets);
 
     for (int i = 0; i < numShadowRays; i++) {
       glm::vec3 offsetBy = offsets[i];
@@ -45,10 +46,11 @@ float addLight(Light& light, RayTriangleIntersection& intersection, Scene* scene
         shadow += shadowMul;
     }
     brightness -= shadow / numShadowRays;
+    if (shadow > 0.0f) inShadow = true;
   }
 
   /* Specular lighting */
-  if (scene->specularPass) {
+  if (scene->specularPass && !inShadow && object.specularStrength > 0.0f) {
     float shininess = 128.0f;
     float specular = std::pow(std::max(0.0f, glm::dot(viewDirection, reflectDirection)), shininess);
     brightness += specular * light.intensity * object.specularStrength;

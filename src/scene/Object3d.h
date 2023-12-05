@@ -23,6 +23,8 @@ public:
     float refractiveIndex;
     float transparency;
 
+    std::string name;
+
     bool textureMapping;
     bool cull;
 

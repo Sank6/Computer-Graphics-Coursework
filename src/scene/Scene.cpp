@@ -24,6 +24,7 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
 
   while (line.substr(0, 6) != "mtllib" && !objFile.eof()) {
     std::getline(objFile, line);
+    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
   }
   std::vector<Colour> colours;
   std::unordered_map<std::string, std::string> textureMap;
@@ -32,13 +33,12 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
     std::string mtlFilePath = directory + line.substr(7, line.length() - 7);
 
     std::ifstream mtlFile(mtlFilePath);
-    std::cout << "Loading " << mtlFilePath << std::endl;
 
     if (mtlFile.good()) {
-      std::cout << "File exists" << std::endl;
       std::string currentColourString = "";
       for (int i = 0; i < MAX_LINES; i++) {
         std::getline(mtlFile, line);
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
         if (line.substr(0, 6) == "newmtl") {
           currentColourString = line.substr(7, line.length() - 7);
         } else if (line.substr(0, 2) == "Kd") {
@@ -69,9 +69,6 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
       mtlFile.close();
     };
     mtlFile.clear();
-    for (Colour &colour : colours) {
-      std::cout << "Loaded " << colour.name << std::endl;
-    }
   }
   objFile.clear();
   objFile.seekg(0, std::ios::beg);
@@ -81,10 +78,11 @@ void Scene::loadModel(std::string fileName, float scalingFactor) {
   Colour currentColour = Colour("Default", 50, 50, 50);
   if (colours.size() > 0) currentColour = colours[0];
   std::string currentTexture = "";
-  Object3d currentObject;
+  Object3d currentObject = Object3d("unnamed", window);
 
   for (int i = 1; i < MAX_LINES; i++) {
     std::getline(objFile, line);
+    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
     if (line.substr(0, 2) == "v ") {
       std::string x = line.substr(2, line.find(' ', 2) - 2);
       std::string y = line.substr(line.find(' ', 2) + 1, line.find(' ', line.find(' ', 2) + 1) - line.find(' ', 2) - 1);
@@ -176,14 +174,16 @@ void Scene::addLight(Light light) {
 }
 
 void Scene::addObject(Object3d object) {
-  std::cout << "Loaded " << object.name << std::endl;
-
   if (object.name == "tall_box" || object.name == "short_box") {
+    object.cull = false;
+  }
+
+  if (object.name == "sphere" || object.name == "sphere_t" || object.name == "bunny") {
+    object.specularStrength = 0.5f;
     object.cull = false;
   }
   
   if (object.name == "sphere") {
-    object.cull = false;
     object.reflectiveness = 0.6f;
   }
 
@@ -193,9 +193,12 @@ void Scene::addObject(Object3d object) {
 
   if (object.name == "bunny") {
     object.shading = PHONG;
+    object.specularStrength = 0.5f;
     object.transparency = 0.8f;
     object.refractiveIndex = 1.4f;
   }
+
+  std::cout << object.name << " has " << object.triangles.size() << " triangles" << std::endl;
 
   objects.push_back(object);
 }
