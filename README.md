@@ -11,5 +11,6 @@ make
 or
 
 ```
+chmod +x build.sh
 ./build.sh
 ```
